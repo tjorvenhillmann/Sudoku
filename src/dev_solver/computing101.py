@@ -15,46 +15,46 @@ grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-myPen = turtle.Turtle()
-myPen.tracer(0)
-myPen.speed(0)
-myPen.color("#000000")
-myPen.hideturtle()
-topLeft_x=-150
-topLeft_y=150
+# myPen = turtle.Turtle()
+# myPen.tracer()
+# myPen.speed(0)
+# myPen.color("#000000")
+# myPen.hideturtle()
+# topLeft_x=-150
+# topLeft_y=150
 
-def text(message,x,y,size):
-    FONT = ('Arial', size, 'normal')
-    myPen.penup()
-    myPen.goto(x,y)    		  
-    myPen.write(message,align="left",font=FONT)
+# def text(message,x,y,size):
+#     FONT = ('Arial', size, 'normal')
+#     myPen.penup()
+#     myPen.goto(x,y)    		  
+#     myPen.write(message,align="left",font=FONT)
 
 #A procedure to draw the grid on screen using Python Turtle
-def drawGrid(grid):
-  intDim=35
-  for row in range(0,10):
-    if (row%3)==0:
-      myPen.pensize(3)
-    else:
-      myPen.pensize(1)
-    myPen.penup()
-    myPen.goto(topLeft_x,topLeft_y-row*intDim)
-    myPen.pendown()
-    myPen.goto(topLeft_x+9*intDim,topLeft_y-row*intDim)
-  for col in range(0,10):
-    if (col%3)==0:
-      myPen.pensize(3)
-    else:
-      myPen.pensize(1)    
-    myPen.penup()
-    myPen.goto(topLeft_x+col*intDim,topLeft_y)
-    myPen.pendown()
-    myPen.goto(topLeft_x+col*intDim,topLeft_y-9*intDim)
+# def drawGrid(grid):
+#   intDim=35
+#   for row in range(0,10):
+#     if (row%3)==0:
+#       myPen.pensize(3)
+#     else:
+#       myPen.pensize(1)
+#     myPen.penup()
+#     myPen.goto(topLeft_x,topLeft_y-row*intDim)
+#     myPen.pendown()
+#     myPen.goto(topLeft_x+9*intDim,topLeft_y-row*intDim)
+#   for col in range(0,10):
+#     if (col%3)==0:
+#       myPen.pensize(3)
+#     else:
+#       myPen.pensize(1)    
+#     myPen.penup()
+#     myPen.goto(topLeft_x+col*intDim,topLeft_y)
+#     myPen.pendown()
+#     myPen.goto(topLeft_x+col*intDim,topLeft_y-9*intDim)
 
-  for row in range (0,9):
-      for col in range (0,9):
-        if grid[row][col]!=0:
-          text(grid[row][col],topLeft_x+col*intDim+9,topLeft_y-row*intDim-intDim+8,18)
+#   for row in range (0,9):
+#       for col in range (0,9):
+#         if grid[row][col]!=0:
+#           text(grid[row][col],topLeft_x+col*intDim+9,topLeft_y-row*intDim-intDim+8,18)
 
 
 #A function to check if the grid is full
@@ -66,6 +66,20 @@ def checkGrid(grid):
 
   #We have a complete grid!  
   return True 
+
+def print_board(bo):
+    for i in range(len(bo)):
+        if i % 3 == 0 and i != 0:
+            print("- - - - - - - - - - - -  ")
+
+        for j in range(len(bo[0])):
+            if j % 3 == 0 and j != 0:
+                print(" | ", end="")
+
+            if j == 8:
+                print(bo[i][j])
+            else:
+                print(str(bo[i][j]) + " ", end="")
 
 #A backtracking/recursive function to check all possible combinations of numbers until a solution is found
 def solveGrid(grid):
@@ -120,7 +134,6 @@ numberList=[1,2,3,4,5,6,7,8,9]
 
 #A backtracking/recursive function to check all possible combinations of numbers until a solution is found
 def fillGrid(grid):
-  global counter
   #Find next empty cell
   for i in range(0,81):
     row=i//9
@@ -168,8 +181,8 @@ def fillGrid(grid):
     
 #Generate a Fully Solved Grid
 fillGrid(grid)
-drawGrid(grid) 
-myPen.getscreen().update()
+print_board(grid)
+print()
 sleep(1)
 
 
@@ -205,9 +218,6 @@ while attempts>0:
     grid[row][col]=backup
     #We could stop here, but we can also have another attempt with a different cell just to try to remove more numbers
     attempts -= 1
-  
-  myPen.clear()
-  drawGrid(grid) 
-  myPen.getscreen().update()
 
+print_board(grid)
 print("Sudoku Grid Ready")
