@@ -1,5 +1,5 @@
 from random import randint, shuffle
-from time import sleep
+from time import sleep, time
 
 class Generator:
     def __init__(self) -> None:
@@ -18,7 +18,7 @@ class Generator:
         self.counter = 1
 
         # Value for difficulty
-        self.attempts = 5
+        self.attempts = 100 #needed nearly 600secs and left us with 25 remaining clues --> not good
 
     def checkGrid(self, grid):
         # This function checks every cell for a value other than zero
@@ -201,10 +201,16 @@ class Generator:
 def main():
     # From empty grid to a solvable puzzle
     g = Generator()
+    time_start = time()
     g.fillGrid()
+    time_end = time()
+    print(f"Time to fill grid: {time_end - time_start} secs")
     g.print_board()
     print()
+    time_start = time()
     g.reduceGrid()
+    time_end = time()
+    print(f"Time to reduce grid: {time_end - time_start} secs")
     g.print_board()
     print("Sudoku Grid Ready")
 
