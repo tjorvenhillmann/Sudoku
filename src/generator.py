@@ -169,7 +169,8 @@ class Generator:
         # Start by removing numbers from random cells
         # With increased number of attemps more numbers are getting removed
         # This increases the difficulty
-        while self.attempts > 0:
+        clues = 81
+        while clues >= 30:
             #Select a random cell that is not already empty
             row = randint(0,8)
             col = randint(0,8)
@@ -196,7 +197,8 @@ class Generator:
                 self.grid[row][col] = backup
                 #We could stop here, but we can also have another attempt with a different cell just to try to remove more numbers
                 self.attempts -= 1
-
+            else:
+                clues -= 1
 
 def main():
     # From empty grid to a solvable puzzle
