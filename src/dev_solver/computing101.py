@@ -1,90 +1,51 @@
-#Sudoku Generator Algorithm - www.101computing.net/sudoku-generator-algorithm/
-import turtle
 from random import randint, shuffle
 from time import sleep
 
-#initialise empty 9 by 9 grid
-grid = []
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-# myPen = turtle.Turtle()
-# myPen.tracer()
-# myPen.speed(0)
-# myPen.color("#000000")
-# myPen.hideturtle()
-# topLeft_x=-150
-# topLeft_y=150
-
-# def text(message,x,y,size):
-#     FONT = ('Arial', size, 'normal')
-#     myPen.penup()
-#     myPen.goto(x,y)    		  
-#     myPen.write(message,align="left",font=FONT)
-
-#A procedure to draw the grid on screen using Python Turtle
-# def drawGrid(grid):
-#   intDim=35
-#   for row in range(0,10):
-#     if (row%3)==0:
-#       myPen.pensize(3)
-#     else:
-#       myPen.pensize(1)
-#     myPen.penup()
-#     myPen.goto(topLeft_x,topLeft_y-row*intDim)
-#     myPen.pendown()
-#     myPen.goto(topLeft_x+9*intDim,topLeft_y-row*intDim)
-#   for col in range(0,10):
-#     if (col%3)==0:
-#       myPen.pensize(3)
-#     else:
-#       myPen.pensize(1)    
-#     myPen.penup()
-#     myPen.goto(topLeft_x+col*intDim,topLeft_y)
-#     myPen.pendown()
-#     myPen.goto(topLeft_x+col*intDim,topLeft_y-9*intDim)
-
-#   for row in range (0,9):
-#       for col in range (0,9):
-#         if grid[row][col]!=0:
-#           text(grid[row][col],topLeft_x+col*intDim+9,topLeft_y-row*intDim-intDim+8,18)
+#initialisierung eines leeren Sudoku Puuzles
+grid = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
 
-#A function to check if the grid is full
-def checkGrid(grid):
-  for row in range(0,9):
-      for col in range(0,9):
+#Funktion um die Vollständigkeit des Sudokus zu prüfen
+def checkGrid(grid:list) -> bool:
+  for row in range(9):
+      for col in range(9):
         if grid[row][col]==0:
           return False
 
-  #We have a complete grid!  
+  #Sudoku wurde vollständig befüllt 
   return True 
 
-def print_board(bo):
+#Funktion um das Board in der Shell auszugeben
+def print_board(bo:list) -> None:
+    #Unterteilung 3x3 Kästchen horizontal
     for i in range(len(bo)):
         if i % 3 == 0 and i != 0:
             print("- - - - - - - - - - - -  ")
-
+        #Unterteilung 3x3 Kästchen vertikal
         for j in range(len(bo[0])):
             if j % 3 == 0 and j != 0:
                 print(" | ", end="")
-
+            #Print mit neuer Zeile falls letzte Zahl in Reihe
             if j == 8:
                 print(bo[i][j])
+            #Print mit Leeerzeichen für alle anderen
             else:
                 print(str(bo[i][j]) + " ", end="")
 
-#A backtracking/recursive function to check all possible combinations of numbers until a solution is found
-def solveGrid(grid):
+#Backtracking Algorithmus um das erstellte Sudoku zu lösen
+def solveGrid(grid:list) -> bool:
   global counter
-  #Find next empty cell
+  #Finden der nächsten leeren Zelle
   for i in range(0,81):
     row=i//9
     col=i%9
@@ -133,7 +94,7 @@ numberList=[1,2,3,4,5,6,7,8,9]
 #shuffle(numberList)
 
 #A backtracking/recursive function to check all possible combinations of numbers until a solution is found
-def fillGrid(grid):
+def fillGrid(grid:list) -> bool:
   #Find next empty cell
   for i in range(0,81):
     row=i//9
