@@ -352,7 +352,7 @@ def main():
     app = QApplication([])
     gui = Gui()
     gui.setupUi()
-    gui.show()
+    gui.loadGui()
     app.exec()
 
 if __name__ == "__main__":
