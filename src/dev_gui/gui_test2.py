@@ -9,8 +9,10 @@ from PyQt5.QtWidgets import *
 
 # Main class with all the Window/Widgets properties 
 class Gui:
-    def __init__(self):
+    # Gui clas constructor 
+    def __init__(self, grid):
         self.MainWindow = QMainWindow()
+        self.grid = grid
 
     def setupMainWindow(self):
         font = QFont()
@@ -177,55 +179,11 @@ class Gui:
         self.Timer.setButtonSymbols(QAbstractSpinBox.NoButtons)
 
         # Adding rows and columns to the Board
-        if (self.Board.columnCount() < 9):
-            self.Board.setColumnCount(9)
-        __qtablewidgetitem = QTableWidgetItem()
-        __qtablewidgetitem.setText(u"Col0");
-        self.Board.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(3, __qtablewidgetitem3)
-        __qtablewidgetitem4 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(4, __qtablewidgetitem4)
-        __qtablewidgetitem5 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(5, __qtablewidgetitem5)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(6, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(7, __qtablewidgetitem7)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.Board.setHorizontalHeaderItem(8, __qtablewidgetitem8)
-        if (self.Board.rowCount() < 9):
-            self.Board.setRowCount(9)
-        __qtablewidgetitem9 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(0, __qtablewidgetitem9)
-        __qtablewidgetitem10 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(1, __qtablewidgetitem10)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(2, __qtablewidgetitem11)
-        __qtablewidgetitem12 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(3, __qtablewidgetitem12)
-        __qtablewidgetitem13 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(4, __qtablewidgetitem13)
-        __qtablewidgetitem14 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(5, __qtablewidgetitem14)
-        __qtablewidgetitem15 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(6, __qtablewidgetitem15)
-        __qtablewidgetitem16 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(7, __qtablewidgetitem16)
-        __qtablewidgetitem17 = QTableWidgetItem()
-        self.Board.setVerticalHeaderItem(8, __qtablewidgetitem17)
-        __qtablewidgetitem18 = QTableWidgetItem()
-        __qtablewidgetitem18.setTextAlignment(Qt.AlignCenter);
-        __qtablewidgetitem18.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsEnabled);
+        self.createTable()
 
         # Board properties
-        self.Board.setItem(0, 0, __qtablewidgetitem18)
         self.Board.setObjectName(u"Board")
-        self.Board.setGeometry(QRect(90, 100, 630, 630))
+        self.Board.setGeometry(QRect(90, 100, 636, 636))
         self.Board.setFrameShape(QFrame.Box)
         self.Board.setFrameShadow(QFrame.Plain)
         self.Board.setLineWidth(3)
@@ -250,25 +208,25 @@ class Gui:
         # Adding thicke horizontal and vertical lines to the grid
         self.Hor1 = QFrame(self.Game)
         self.Hor1.setObjectName(u"Hor1")
-        self.Hor1.setGeometry(QRect(90, 310, 630, 3))
+        self.Hor1.setGeometry(QRect(90, 310, 636, 3))
         self.Hor1.setFrameShadow(QFrame.Plain)
         self.Hor1.setLineWidth(3)
         self.Hor1.setFrameShape(QFrame.HLine)
         self.Hor2 = QFrame(self.Game)
         self.Hor2.setObjectName(u"Hor2")
-        self.Hor2.setGeometry(QRect(90, 520, 630, 3))
+        self.Hor2.setGeometry(QRect(90, 520, 636, 3))
         self.Hor2.setFrameShadow(QFrame.Plain)
         self.Hor2.setLineWidth(3)
         self.Hor2.setFrameShape(QFrame.HLine)
         self.Ver1 = QFrame(self.Game)
         self.Ver1.setObjectName(u"Ver1")
-        self.Ver1.setGeometry(QRect(300, 100, 3, 630))
+        self.Ver1.setGeometry(QRect(300, 100, 3, 636))
         self.Ver1.setFrameShadow(QFrame.Plain)
         self.Ver1.setLineWidth(3)
         self.Ver1.setFrameShape(QFrame.VLine)
         self.Ver2 = QFrame(self.Game)
         self.Ver2.setObjectName(u"Ver2")
-        self.Ver2.setGeometry(QRect(510, 100, 3, 630))
+        self.Ver2.setGeometry(QRect(510, 100, 3, 636))
         self.Ver2.setFrameShadow(QFrame.Plain)
         self.Ver2.setLineWidth(3)
         self.Ver2.setFrameShape(QFrame.VLine)
@@ -285,40 +243,6 @@ class Gui:
         self.Insane.setText(QCoreApplication.translate("MainWindow", u"Insane", None))
         self.Hard.setText(QCoreApplication.translate("MainWindow", u"Hard", None))
         self.HeaderPage1.setText(QCoreApplication.translate("MainWindow", u"SUDOKU", None))
-        ___qtablewidgetitem = self.Board.horizontalHeaderItem(1)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Col1", None));
-        ___qtablewidgetitem1 = self.Board.horizontalHeaderItem(2)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Col2", None));
-        ___qtablewidgetitem2 = self.Board.horizontalHeaderItem(3)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Col3", None));
-        ___qtablewidgetitem3 = self.Board.horizontalHeaderItem(4)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Col4", None));
-        ___qtablewidgetitem4 = self.Board.horizontalHeaderItem(5)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Col5", None));
-        ___qtablewidgetitem5 = self.Board.horizontalHeaderItem(6)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Col6", None));
-        ___qtablewidgetitem6 = self.Board.horizontalHeaderItem(7)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Col7", None));
-        ___qtablewidgetitem7 = self.Board.horizontalHeaderItem(8)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"Col8", None));
-        ___qtablewidgetitem8 = self.Board.verticalHeaderItem(0)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"Row0", None));
-        ___qtablewidgetitem9 = self.Board.verticalHeaderItem(1)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"Row1", None));
-        ___qtablewidgetitem10 = self.Board.verticalHeaderItem(2)
-        ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"Row2", None));
-        ___qtablewidgetitem11 = self.Board.verticalHeaderItem(3)
-        ___qtablewidgetitem11.setText(QCoreApplication.translate("MainWindow", u"Row3", None));
-        ___qtablewidgetitem12 = self.Board.verticalHeaderItem(4)
-        ___qtablewidgetitem12.setText(QCoreApplication.translate("MainWindow", u"Row4", None));
-        ___qtablewidgetitem13 = self.Board.verticalHeaderItem(5)
-        ___qtablewidgetitem13.setText(QCoreApplication.translate("MainWindow", u"Row5", None));
-        ___qtablewidgetitem14 = self.Board.verticalHeaderItem(6)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("MainWindow", u"Row6", None));
-        ___qtablewidgetitem15 = self.Board.verticalHeaderItem(7)
-        ___qtablewidgetitem15.setText(QCoreApplication.translate("MainWindow", u"Row7", None));
-        ___qtablewidgetitem16 = self.Board.verticalHeaderItem(8)
-        ___qtablewidgetitem16.setText(QCoreApplication.translate("MainWindow", u"Row8", None));
 
         __sortingEnabled = self.Board.isSortingEnabled()
         self.Board.setSortingEnabled(False)
@@ -345,14 +269,47 @@ class Gui:
 
         QMetaObject.connectSlotsByName(self.MainWindow)
 
+    def createTable(self):
+        self.Board.setRowCount(9)
+        self.Board.setColumnCount(9)
+        cellFont = QFont()
+        cellFont.setPointSize(16)
+
+        for r in range(9):
+            for c in range(9):
+                data = str(self.grid[r][c])
+                if data == "0":
+                    data = ""
+                item = QTableWidgetItem(data)
+                item.setTextAlignment(Qt.AlignCenter)
+                item.setFont(cellFont)
+                self.Board.setItem(r, c, item)
+
     def loadGui(self):
         self.MainWindow.show()
 
+
 def main():
+    # Default board for testing purposes 
+    grid = [[7,8,0,4,0,0,1,2,0],
+            [6,0,0,0,7,5,0,0,9],
+            [0,0,0,6,0,1,0,7,8],
+            [0,0,7,0,4,0,2,6,0],
+            [0,0,1,0,5,0,9,3,0],
+            [9,0,4,0,6,0,0,0,5],
+            [0,7,0,3,0,0,0,1,2],
+            [1,2,0,0,0,7,4,0,0],
+            [0,4,9,2,0,6,0,0,7]]
+    
+    # Create a new QT application
     app = QApplication([])
-    gui = Gui()
+    # Create instance of the gui class 
+    gui = Gui(grid)
+    # Run the complete gui setup 
     gui.setupUi()
+    # Show the gui on the screen
     gui.loadGui()
+    # Execution line thats needed for every Wt QT application
     app.exec()
 
 if __name__ == "__main__":
