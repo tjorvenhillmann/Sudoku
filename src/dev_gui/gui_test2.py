@@ -344,7 +344,7 @@ def main():
     gui.setupUi()
     # Show the gui on the screen
     gui.loadGui()
-    # Execution line thats needed for every Wt QT application
+    # Execution line thats needed for every QT application
     app.exec()
 
 if __name__ == "__main__":
