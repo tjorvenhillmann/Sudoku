@@ -179,9 +179,6 @@ class Gui:
         self.Timer.setAlignment(Qt.AlignCenter)
         self.Timer.setButtonSymbols(QAbstractSpinBox.NoButtons)
 
-        # Adding rows and columns to the Board
-        self.createTable()
-
         # Board properties
         self.Board.setObjectName(u"Board")
         self.Board.setGeometry(QRect(90, 100, 636, 636))
@@ -197,6 +194,8 @@ class Gui:
         self.Board.setSortingEnabled(False)
         self.Board.setWordWrap(True)
         self.Board.setCornerButtonEnabled(True)
+        self.Board.setRowCount(9)
+        self.Board.setColumnCount(9)
         self.Board.horizontalHeader().setVisible(False)
         self.Board.horizontalHeader().setCascadingSectionResizes(False)
         self.Board.horizontalHeader().setMinimumSectionSize(7)
@@ -261,35 +260,65 @@ class Gui:
         self.setupWindows()
         self.retranslateUi()
 
-        self.Easy.clicked.connect(lambda: self.Windows.setCurrentIndex(1))
-        self.Medium.clicked.connect(lambda: self.Windows.setCurrentIndex(1))
-        self.Hard.clicked.connect(lambda: self.Windows.setCurrentIndex(1))
-        self.Insane.clicked.connect(lambda: self.Windows.setCurrentIndex(1))
-        self.Back.clicked.connect(lambda: self.Windows.setCurrentIndex(0))
+        self.Easy.clicked.connect(lambda: self.eventHandler("Easy"))
+        self.Medium.clicked.connect(lambda: self.eventHandler("Medium"))
+        self.Hard.clicked.connect(lambda: self.eventHandler("Hard"))
+        self.Insane.clicked.connect(lambda: self.eventHandler("Insane"))
+        self.Back.clicked.connect(lambda: self.eventHandler("Back"))
 
         self.Windows.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(self.MainWindow)
-
+         
     def createTable(self):
-        self.Board.setRowCount(9)
-        self.Board.setColumnCount(9)
+        #Setting the font size for the clue numbers
         cellFont = QFont()
         cellFont.setPointSize(16)
 
+        # Loops to write the corresponding value from the grid into each cell 
         for r in range(9):
             for c in range(9):
                 data = str(self.grid[r][c])
+                # Check for Zeros --> empty cell
                 if data != "0":
                     item = QTableWidgetItem(data)
-                    item.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-                    #item.setForeground(Qt.black)
+                    # Make cells with clues uneditable but still selectable
+                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 else:
-                    item = QTableWidgetItem("")
+                    item = QTableWidgetItem()
                 
+                # Align the numbers in the center of each cell
                 item.setTextAlignment(Qt.AlignCenter)
+                # Use the above created font-size
                 item.setFont(cellFont)
+                # Write the number with it's properties into the board
                 self.Board.setItem(r, c, item)
+
+    def clearTable(self):
+        # Loop to clear each cell 
+        # Can later be modified to add a clear cell button 
+        for r in range(9):
+            for c in range(9):
+                self.Board.setItem(r, c, QTableWidgetItem())
+
+    def eventHandler(self, event):
+        # This function represents the event handeling functionality
+        # Each UI element(e.g buttons) have diffrent evenst thats beeing handled here  
+        # With newly introduced match -> case statement from Python 3.11
+        # So Python 3.11 is needed atm --> may be later changed to if -> elif statements 
+        match event:
+            case "Easy":
+                self.createTable()
+                return self.Windows.setCurrentIndex(1)
+            case "Medium":
+                return self.Windows.setCurrentIndex(1)
+            case "Hard":
+                pass
+            case "Insane":
+                pass
+            case "Back":
+                self.clearTable()
+                return self.Windows.setCurrentIndex(0)
 
     def loadGui(self):
         self.MainWindow.show()
