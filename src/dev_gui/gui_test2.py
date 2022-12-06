@@ -3,6 +3,7 @@
 # ------------------------------------------
 
 # PyQt5 dependencies
+from PyQt5 import QtCore
 from PyQt5.QtCore import (QCoreApplication, QMetaObject, QRect, Qt)
 from PyQt5.QtGui import (QCursor, QFont)
 from PyQt5.QtWidgets import *
@@ -278,9 +279,13 @@ class Gui:
         for r in range(9):
             for c in range(9):
                 data = str(self.grid[r][c])
-                if data == "0":
-                    data = ""
-                item = QTableWidgetItem(data)
+                if data != "0":
+                    item = QTableWidgetItem(data)
+                    item.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+                    #item.setForeground(Qt.black)
+                else:
+                    item = QTableWidgetItem("")
+                
                 item.setTextAlignment(Qt.AlignCenter)
                 item.setFont(cellFont)
                 self.Board.setItem(r, c, item)
