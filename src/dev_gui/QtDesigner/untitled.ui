@@ -294,6 +294,9 @@
     <property name="focusPolicy">
      <enum>Qt::StrongFocus</enum>
     </property>
+    <property name="styleSheet">
+     <string notr="true">gridline-color: black</string>
+    </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
     </property>
@@ -452,7 +455,7 @@
     </column>
     <item row="0" column="0">
      <property name="text">
-      <string/>
+      <string>9</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
