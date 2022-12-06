@@ -185,6 +185,7 @@ class Gui:
         # Board properties
         self.Board.setObjectName(u"Board")
         self.Board.setGeometry(QRect(90, 100, 636, 636))
+        self.Board.setStyleSheet(u"gridline-color: black")
         self.Board.setFrameShape(QFrame.Box)
         self.Board.setFrameShadow(QFrame.Plain)
         self.Board.setLineWidth(3)
