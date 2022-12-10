@@ -5,7 +5,7 @@
 import random
 # PyQt5 dependencies
 from PyQt5 import QtCore
-from PyQt5.QtCore import (QCoreApplication, QMetaObject, QRect, Qt)
+from PyQt5.QtCore import (QCoreApplication, QMetaObject, QRect, QTimer, QTime, Qt)
 from PyQt5.QtGui import (QCursor, QFont)
 from PyQt5.QtWidgets import *
 
@@ -18,6 +18,8 @@ class Gui:
         self.checkGrid = checkGrid
         self.emptyCells = list()
         self.counter = 0
+        self.runtime = QTime()
+        self.runtime.setHMS(0,0,0)
 
     def setupMainWindow(self):
         font = QFont()
@@ -139,7 +141,8 @@ class Gui:
         self.Hint = QPushButton(self.Game)
         self.AutoSolve = QPushButton(self.Game)
         self.Check = QPushButton(self.Game)
-        self.Timer = QTimeEdit(self.Game)
+        self.Time = QTimeEdit(self.Game)
+        self.Timer = QTimer(self.Game) # To set an interrupt every second
         self.Board = QTableWidget(self.Game)
         
         # Properties for objects inside Game-Widget
@@ -151,14 +154,14 @@ class Gui:
         font5.setPointSize(32)
         self.HeaderPage.setFont(font5)
         
-        # Back button properties
+        # -- Button "Back"
         self.Back.setObjectName(u"Back")
         self.Back.setGeometry(QRect(10, 10, 50, 50))
         font7 = QFont()
         font7.setPointSize(18)
         self.Back.setFont(font7)
         
-        # Hint/AutoSolve/Check button properties
+        # -- Buttons "Hint/AutoSolve/Check"
         font1 = QFont()
         font1.setPointSize(11)
         self.Hint.setObjectName(u"Hint")
@@ -171,19 +174,23 @@ class Gui:
         self.Check.setGeometry(QRect(780, 490, 160, 80))
         self.Check.setFont(font1)
 
-        # Timer properties
-        self.Timer.setObjectName(u"Timer")
-        self.Timer.setGeometry(QRect(780, 100, 160, 80))
+        # -- TimeEdit "Time" 
+        self.Time.setObjectName(u"Time")
+        self.Time.setGeometry(QRect(780, 100, 160, 80))
         font6 = QFont()
         font6.setPointSize(20)
         font6.setBold(True)
         font6.setWeight(75)
-        self.Timer.setFont(font6)
-        self.Timer.setFrame(True)
-        self.Timer.setAlignment(Qt.AlignCenter)
-        self.Timer.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.Time.setFont(font6)
+        self.Time.setFrame(True)
+        self.Time.setReadOnly(True)
+        self.Time.setWrapping(True)
+        self.Time.setAlignment(Qt.AlignCenter)
+        self.Time.setDisplayFormat("hh:mm:ss")
+        self.Time.setTime(self.runtime)
+        self.Time.setButtonSymbols(QAbstractSpinBox.NoButtons)
 
-        # Board properties
+        # -- TableView "Board" 
         self.Board.setObjectName(u"Board")
         self.Board.setGeometry(QRect(90, 100, 636, 636))
         self.Board.setStyleSheet(u"gridline-color: black")
@@ -276,7 +283,9 @@ class Gui:
         self.Hint.clicked.connect(lambda: self.eventHandler("Hint"))
         self.AutoSolve.clicked.connect(lambda: self.eventHandler("Solve"))
         self.Board.itemChanged.connect(self.wrapCellText)
+        self.Timer.timeout.connect(self.updateTime)
 
+        # Set main page as default window
         self.Windows.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(self.MainWindow)
@@ -306,6 +315,9 @@ class Gui:
                 item.setTextAlignment(Qt.AlignCenter)
                 # Write the number with it's properties into the board
                 self.Board.setItem(r, c, item)
+
+        # Starting the game timer 
+        self.Timer.start(1000)
 
     def solveTable(self):
         # Check if the board is already filled completely
@@ -383,6 +395,16 @@ class Gui:
             self.Board.blockSignals(False)
         else:
             self.counter += 1
+    
+    def updateTime(self):
+        # Adding a second to the runtime
+        self.runtime = self.runtime.addSecs(1) # addSecs retruns a new runtime object 
+        
+        # Print for debugging purposes
+        #print("Runtime: ", self.runtime.toString("hh:mm:ss"))
+        
+        # Update the timer inside the game window
+        self.Time.setTime(self.runtime) 
 
     def eventHandler(self, event):
         # This function represents the event handeling functionality
