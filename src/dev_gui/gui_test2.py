@@ -11,9 +11,10 @@ from PyQt5.QtWidgets import *
 # Main class with all the Window/Widgets properties 
 class Gui:
     # Gui clas constructor 
-    def __init__(self, grid):
+    def __init__(self, gameGrid ):
         self.MainWindow = QMainWindow()
-        self.grid = grid
+        self.gameGrid = gameGrid
+        self.counter = 0
 
     def setupMainWindow(self):
         font = QFont()
@@ -193,6 +194,7 @@ class Gui:
         self.Board.setGridStyle(Qt.SolidLine)
         self.Board.setSortingEnabled(False)
         self.Board.setWordWrap(True)
+        self.Board.setTextElideMode(Qt.TextElideMode.ElideNone)
         self.Board.setCornerButtonEnabled(True)
         self.Board.setRowCount(9)
         self.Board.setColumnCount(9)
@@ -260,11 +262,15 @@ class Gui:
         self.setupWindows()
         self.retranslateUi()
 
+        # Events from main page 
         self.Easy.clicked.connect(lambda: self.eventHandler("Easy"))
         self.Medium.clicked.connect(lambda: self.eventHandler("Medium"))
         self.Hard.clicked.connect(lambda: self.eventHandler("Hard"))
         self.Insane.clicked.connect(lambda: self.eventHandler("Insane"))
+        
+        # Events from game page 
         self.Back.clicked.connect(lambda: self.eventHandler("Back"))
+        self.Board.itemChanged.connect(self.wrapCellText)
 
         self.Windows.setCurrentIndex(0)
 
@@ -278,19 +284,19 @@ class Gui:
         # Loops to write the corresponding value from the grid into each cell 
         for r in range(9):
             for c in range(9):
-                data = str(self.grid[r][c])
+                data = str(self.gameGrid[r][c])
                 # Check for Zeros --> empty cell
                 if data != "0":
                     item = QTableWidgetItem(data)
                     # Make cells with clues uneditable but still selectable
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                    # Use the above created font-size
+                    item.setFont(cellFont)
                 else:
                     item = QTableWidgetItem()
-                
+
                 # Align the numbers in the center of each cell
                 item.setTextAlignment(Qt.AlignCenter)
-                # Use the above created font-size
-                item.setFont(cellFont)
                 # Write the number with it's properties into the board
                 self.Board.setItem(r, c, item)
 
@@ -300,6 +306,35 @@ class Gui:
         for r in range(9):
             for c in range(9):
                 self.Board.setItem(r, c, QTableWidgetItem())
+
+    def wrapCellText(self, item):
+        # This function wraps the cell text 
+        # Wrapping is only done with words so it's not applying on single chars
+        # So we have to manually add a whiespace after every single character 
+        # Only then we cann add multiple clues in a cell and display inside the cell
+        # Otherwise the text would not be shown only when the cell text is changed 
+        
+        # The counter is needed to exclude the createTable itemChanged events   
+        if self.counter == 81:
+            # We have to block other signals in order to get the cell text
+            self.Board.blockSignals(True)
+            # Get the current text inside the cell
+            text = item.text()
+            # Variable for wrapped text
+            wrappedText = ""
+            # For every single character inside text add a whitespace behind
+            for element in text:
+                # Check if the theres already a whitespace -> another one not needed
+                if element == " ":
+                    wrappedText += ""
+                else:
+                    wrappedText += str(element) + " "
+            # Write the wrapped text back into the cell
+            item.setText(wrappedText)
+            # Enable the signals for this item
+            self.Board.blockSignals(False)
+        else:
+            self.counter += 1
 
     def eventHandler(self, event):
         # This function represents the event handeling functionality
@@ -326,20 +361,21 @@ class Gui:
 
 def main():
     # Default board for testing purposes 
-    grid = [[7,8,0,4,0,0,1,2,0],
-            [6,0,0,0,7,5,0,0,9],
-            [0,0,0,6,0,1,0,7,8],
-            [0,0,7,0,4,0,2,6,0],
-            [0,0,1,0,5,0,9,3,0],
-            [9,0,4,0,6,0,0,0,5],
-            [0,7,0,3,0,0,0,1,2],
-            [1,2,0,0,0,7,4,0,0],
-            [0,4,9,2,0,6,0,0,7]]
+    gameGrid  = [[7,8,0,4,0,0,1,2,0],
+                 [6,0,0,0,7,5,0,0,9],
+                 [0,0,0,6,0,1,0,7,8],
+                 [0,0,7,0,4,0,2,6,0],
+                 [0,0,1,0,5,0,9,3,0],
+                 [9,0,4,0,6,0,0,0,5],
+                 [0,7,0,3,0,0,0,1,2],
+                 [1,2,0,0,0,7,4,0,0],
+                 [0,4,9,2,0,6,0,0,7]]
     
+    checkGrid = [[]]
     # Create a new QT application
     app = QApplication([])
     # Create instance of the gui class 
-    gui = Gui(grid)
+    gui = Gui(gameGrid)
     # Run the complete gui setup 
     gui.setupUi()
     # Show the gui on the screen
