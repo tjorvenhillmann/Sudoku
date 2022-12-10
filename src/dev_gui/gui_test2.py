@@ -274,6 +274,7 @@ class Gui:
         # Events from game page 
         self.Back.clicked.connect(lambda: self.eventHandler("Back"))
         self.Hint.clicked.connect(lambda: self.eventHandler("Hint"))
+        self.AutoSolve.clicked.connect(lambda: self.eventHandler("Solve"))
         self.Board.itemChanged.connect(self.wrapCellText)
 
         self.Windows.setCurrentIndex(0)
@@ -305,6 +306,27 @@ class Gui:
                 item.setTextAlignment(Qt.AlignCenter)
                 # Write the number with it's properties into the board
                 self.Board.setItem(r, c, item)
+
+    def solveTable(self):
+        # Check if the board is already filled completely
+        if len(self.emptyCells) > 0:
+            # Iterate through each cell and placre value from checkGrid
+            for r in range(9):
+                for c in range(9):
+                    data = self.checkGrid[r][c]
+                    
+                    # Create item with data 
+                    item = QTableWidgetItem(str(data))
+
+                    # Setting item properties
+                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                    item.setFont(self.cellFont)
+                    item.setTextAlignment(Qt.AlignCenter)
+
+                    # Write item into the board
+                    self.Board.setItem(r, c, item)
+        else:
+            return None
 
     def clearTable(self):
         # Loop to clear each cell 
@@ -382,6 +404,8 @@ class Gui:
                 return self.Windows.setCurrentIndex(0)
             case "Hint":
                 self.setHintTable()
+            case "Solve":
+                self.solveTable()
 
     def loadGui(self):
         self.MainWindow.show()
