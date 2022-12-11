@@ -378,19 +378,43 @@ class Gui:
         if self.counter == 81:
             # We have to block other signals in order to get the cell text
             self.Board.blockSignals(True)
+            
             # Get the current text inside the cell
             text = item.text()
-            # Variable for wrapped text
-            wrappedText = ""
-            # For every single character inside text add a whitespace behind
-            for element in text:
-                # Check if the theres already a whitespace -> another one not needed
-                if element == " ":
-                    wrappedText += ""
-                else:
-                    wrappedText += str(element) + " "
-            # Write the wrapped text back into the cell
-            item.setText(wrappedText)
+
+            # Set default font size to 8
+            font = QFont()
+            font.setPointSize(8)
+            item.setFont(font)
+            
+            # Check for the input lenght 
+            if len(str(text)) == 1:
+                # Dont print 0 into the cell
+                if str(text) == "0":
+                    item.setText("")
+                else: 
+                    # We only have one single number so we scale to solved size
+                    item.setFont(self.cellFont)
+                    item.setTextAlignment(Qt.AlignCenter)
+            else:
+                # Variable for wrapped text
+                wrappedText = ""
+                
+                # For every single character inside text add a whitespace behind
+                for element in text:
+                    # Check if the theres already a whitespace -> another one not needed
+                    if element == " ":
+                        wrappedText += ""
+                    # Dont print 0 into the cell
+                    elif element == "0":
+                        wrappedText += ""
+                    # Text isn't already wrapped so we wrap it
+                    else:
+                        wrappedText += str(element) + " "
+
+                # Write the wrapped text back into the cell
+                item.setText(wrappedText)
+            
             # Enable the signals for this item
             self.Board.blockSignals(False)
         else:
