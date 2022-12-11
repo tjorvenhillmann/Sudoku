@@ -4,7 +4,6 @@
 # Python default dependencies
 import random
 # PyQt5 dependencies
-from PyQt5 import QtCore
 from PyQt5.QtCore import (QCoreApplication, QMetaObject, QRect, QTimer, QTime, Qt)
 from PyQt5.QtGui import (QCursor, QFont)
 from PyQt5.QtWidgets import *
@@ -140,6 +139,7 @@ class Gui:
         self.Back = QPushButton(self.Game)
         self.Hint = QPushButton(self.Game)
         self.AutoSolve = QPushButton(self.Game)
+        self.Clear = QPushButton(self.Game)
         self.Check = QPushButton(self.Game)
         self.Time = QTimeEdit(self.Game)
         self.Timer = QTimer(self.Game) # To set an interrupt every second
@@ -161,17 +161,20 @@ class Gui:
         font7.setPointSize(18)
         self.Back.setFont(font7)
         
-        # -- Buttons "Hint/AutoSolve/Check"
+        # -- Buttons "Hint/AutoSolve/Clear/Check"
         font1 = QFont()
         font1.setPointSize(11)
         self.Hint.setObjectName(u"Hint")
-        self.Hint.setGeometry(QRect(780, 290, 160, 80))
+        self.Hint.setGeometry(QRect(780, 220, 160, 80))
         self.Hint.setFont(font1)
         self.AutoSolve.setObjectName(u"AutoSolve")
-        self.AutoSolve.setGeometry(QRect(780, 390, 160, 80))
+        self.AutoSolve.setGeometry(QRect(780, 340, 160, 80))
         self.AutoSolve.setFont(font1)
+        self.Clear.setObjectName(u"Clear")
+        self.Clear.setGeometry(QRect(780, 460, 160, 80))
+        self.Clear.setFont(font1)
         self.Check.setObjectName(u"Check")
-        self.Check.setGeometry(QRect(780, 490, 160, 80))
+        self.Check.setGeometry(QRect(780, 580, 160, 80))
         self.Check.setFont(font1)
 
         # -- TimeEdit "Time" 
@@ -263,6 +266,7 @@ class Gui:
 
         self.Hint.setText(QCoreApplication.translate("MainWindow", u"Hint", None))
         self.AutoSolve.setText(QCoreApplication.translate("MainWindow", u"Auto-Solve", None))
+        self.Clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.Check.setText(QCoreApplication.translate("MainWindow", u"Check", None))
         self.HeaderPage.setText(QCoreApplication.translate("MainWindow", u"SUDOKU", None))
         self.Back.setText(QCoreApplication.translate("MainWindow", u"<-", None))
@@ -282,6 +286,7 @@ class Gui:
         self.Back.clicked.connect(lambda: self.eventHandler("Back"))
         self.Hint.clicked.connect(lambda: self.eventHandler("Hint"))
         self.AutoSolve.clicked.connect(lambda: self.eventHandler("Solve"))
+        self.Clear.clicked.connect(lambda: self.eventHandler("Clear"))
         self.Board.itemChanged.connect(self.wrapCellText)
         self.Timer.timeout.connect(self.updateTime)
 
@@ -399,7 +404,7 @@ class Gui:
             else:
                 # Variable for wrapped text
                 wrappedText = ""
-                
+
                 # For every single character inside text add a whitespace behind
                 for element in text:
                     # Check if the theres already a whitespace -> another one not needed
@@ -452,6 +457,8 @@ class Gui:
                 self.setHintTable()
             case "Solve":
                 self.solveTable()
+            case "Clear":
+                self.createTable()
 
     def loadGui(self):
         self.MainWindow.show()
