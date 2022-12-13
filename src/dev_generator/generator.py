@@ -1,5 +1,5 @@
 from random import randint, shuffle
-from time import sleep, time
+from time import time
 
 class Generator:
     def __init__(self) -> None:
@@ -17,8 +17,6 @@ class Generator:
         # Counter variable for the  
         self.counter = 1
 
-        # Value for difficulty
-        self.attempts = 100 #needed nearly 600secs and left us with 25 remaining clues --> not good
 
     def checkGrid(self, grid):
         # This function checks every cell for a value other than zero
@@ -165,7 +163,7 @@ class Generator:
                 else:
                     print(str(self.grid[i][j]) + " ", end="")
 
-    def reduceGrid(self):
+    def reduceGrid(self, attempts):
         # Start by removing numbers from random cells
         # With increased number of attemps more numbers are getting removed
         # This increases the difficulty
@@ -196,11 +194,32 @@ class Generator:
             if self.counter != 1:
                 self.grid[row][col] = backup
                 #We could stop here, but we can also have another attempt with a different cell just to try to remove more numbers
-                self.attempts -= 1
+                attempts -= 1
             else:
                 clues -= 1
+    
+    def sudoku(self, attempts:int)->tuple:
+        #Return Method for Sudoku game, the solved and the game board are returned in a tuple, to do so we need a complete copy
+        #Gen Full Board == Solved Board
+        self.fillGrid()
+        solved_board = []
+        for r in range(0,9):
+                solved_board.append([])
+                for c in range(0,9):
+                    solved_board[r].append(self.grid[r][c])
+        #Reduce the numbers of the Board, depends on level
+        self.reduceGrid(attempts)
+        game_board = []
+        for r in range(0,9):
+                game_board.append([])
+                for c in range(0,9):
+                    game_board[r].append(self.grid[r][c])
+        boards = (solved_board, game_board)
 
-def main():
+        return(boards)
+
+
+def test():
     # From empty grid to a solvable puzzle
     g = Generator()
     time_start = time()
@@ -215,6 +234,14 @@ def main():
     print(f"Time to reduce grid: {time_end - time_start} secs")
     g.print_board()
     print("Sudoku Grid Ready")
+
+#needs to be used like this
+def main():
+    g = Generator()
+    boards = g.sudoku(100)
+    solved, game = boards
+    print('Solved:\n', solved)
+    print('Game:\n', game)
 
 if __name__ == "__main__":
     main()
