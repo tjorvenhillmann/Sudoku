@@ -3,8 +3,8 @@
 # ------------------------------------------
 # Python default dependencies
 import random
+from copy import deepcopy
 # PyQt5 dependencies
-from PyQt5 import QtCore
 from PyQt5.QtCore import (QCoreApplication, QMetaObject, QRect, QTimer, QTime, Qt)
 from PyQt5.QtGui import (QCursor, QFont)
 from PyQt5.QtWidgets import *
@@ -15,6 +15,8 @@ class Gui:
     def __init__(self, gameGrid, checkGrid):
         self.MainWindow = QMainWindow()
         self.gameGrid = gameGrid
+        # This grid is changed according to users input
+        self.userGrid = deepcopy(gameGrid)
         self.checkGrid = checkGrid
         self.emptyCells = list()
         self.counter = 0
@@ -140,6 +142,7 @@ class Gui:
         self.Back = QPushButton(self.Game)
         self.Hint = QPushButton(self.Game)
         self.AutoSolve = QPushButton(self.Game)
+        self.Clear = QPushButton(self.Game)
         self.Check = QPushButton(self.Game)
         self.Time = QTimeEdit(self.Game)
         self.Timer = QTimer(self.Game) # To set an interrupt every second
@@ -161,17 +164,20 @@ class Gui:
         font7.setPointSize(18)
         self.Back.setFont(font7)
         
-        # -- Buttons "Hint/AutoSolve/Check"
+        # -- Buttons "Hint/AutoSolve/Clear/Check"
         font1 = QFont()
         font1.setPointSize(11)
         self.Hint.setObjectName(u"Hint")
-        self.Hint.setGeometry(QRect(780, 290, 160, 80))
+        self.Hint.setGeometry(QRect(780, 220, 160, 80))
         self.Hint.setFont(font1)
         self.AutoSolve.setObjectName(u"AutoSolve")
-        self.AutoSolve.setGeometry(QRect(780, 390, 160, 80))
+        self.AutoSolve.setGeometry(QRect(780, 340, 160, 80))
         self.AutoSolve.setFont(font1)
+        self.Clear.setObjectName(u"Clear")
+        self.Clear.setGeometry(QRect(780, 460, 160, 80))
+        self.Clear.setFont(font1)
         self.Check.setObjectName(u"Check")
-        self.Check.setGeometry(QRect(780, 490, 160, 80))
+        self.Check.setGeometry(QRect(780, 580, 160, 80))
         self.Check.setFont(font1)
 
         # -- TimeEdit "Time" 
@@ -263,6 +269,7 @@ class Gui:
 
         self.Hint.setText(QCoreApplication.translate("MainWindow", u"Hint", None))
         self.AutoSolve.setText(QCoreApplication.translate("MainWindow", u"Auto-Solve", None))
+        self.Clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.Check.setText(QCoreApplication.translate("MainWindow", u"Check", None))
         self.HeaderPage.setText(QCoreApplication.translate("MainWindow", u"SUDOKU", None))
         self.Back.setText(QCoreApplication.translate("MainWindow", u"<-", None))
@@ -282,6 +289,8 @@ class Gui:
         self.Back.clicked.connect(lambda: self.eventHandler("Back"))
         self.Hint.clicked.connect(lambda: self.eventHandler("Hint"))
         self.AutoSolve.clicked.connect(lambda: self.eventHandler("Solve"))
+        self.Clear.clicked.connect(lambda: self.eventHandler("Clear"))
+        self.Check.clicked.connect(lambda: self.eventHandler("Check"))
         self.Board.itemChanged.connect(self.wrapCellText)
         self.Timer.timeout.connect(self.updateTime)
 
@@ -356,7 +365,7 @@ class Gui:
             # Create new item with data from solved grid
             data = self.checkGrid[r][c]
             item = QTableWidgetItem(str(data))
-
+            
             # Setting item properties
             item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             item.setFont(self.cellFont)
@@ -366,6 +375,15 @@ class Gui:
             self.Board.setItem(r, c, item)
         else:
             return None
+
+    def checkTable(self):
+        # Compare user and check grid 
+        if self.userGrid == self.checkGrid:
+            self.Check.setStyleSheet("background-color: rgba(0, 200, 0, 0.4)")
+            return True 
+        else:
+            self.Check.setStyleSheet("background-color: rgba(200, 0, 0, 0.4)")
+            return False
 
     def wrapCellText(self, item):
         # This function wraps the cell text 
@@ -378,19 +396,49 @@ class Gui:
         if self.counter == 81:
             # We have to block other signals in order to get the cell text
             self.Board.blockSignals(True)
-            # Get the current text inside the cell
+            
+            # Get the current information from cell
             text = item.text()
-            # Variable for wrapped text
-            wrappedText = ""
-            # For every single character inside text add a whitespace behind
-            for element in text:
-                # Check if the theres already a whitespace -> another one not needed
-                if element == " ":
-                    wrappedText += ""
-                else:
-                    wrappedText += str(element) + " "
-            # Write the wrapped text back into the cell
-            item.setText(wrappedText)
+            row = item.row()
+            column = item.column()
+
+            # Set default font size to 8
+            font = QFont()
+            font.setPointSize(8)
+            item.setFont(font)
+            
+            # Check for the input lenght 
+            if len(str(text)) == 1:
+                # Dont print 0 into the cell
+                if str(text) == "0":
+                    item.setText("")
+                else: 
+                    # We only have one single number so we scale to solved size
+                    item.setFont(self.cellFont)
+                    item.setTextAlignment(Qt.AlignCenter)
+                    # Add the current single number into the user grid
+                    self.userGrid[row][column] = int(str(text))
+            else:
+                # Variable for wrapped text
+                wrappedText = ""
+
+                # For every single character inside text add a whitespace behind
+                for element in text:
+                    # Check if the theres already a whitespace -> another one not needed
+                    if element == " ":
+                        wrappedText += ""
+                    # Dont print 0 into the cell
+                    elif element == "0":
+                        wrappedText += ""
+                    # Text isn't already wrapped so we wrap it
+                    else:
+                        wrappedText += str(element) + " "
+                
+                # Remove number from userGrid because of more than one input
+                self.userGrid[row][column] = 0
+                # Write the wrapped text back into the cell
+                item.setText(wrappedText)
+            
             # Enable the signals for this item
             self.Board.blockSignals(False)
         else:
@@ -423,11 +471,17 @@ class Gui:
                 pass
             case "Back":
                 self.clearTable()
+                # Set background color to default
+                self.Check.setStyleSheet("")
                 return self.Windows.setCurrentIndex(0)
             case "Hint":
                 self.setHintTable()
             case "Solve":
                 self.solveTable()
+            case "Clear":
+                self.createTable()
+            case "Check":
+                self.checkTable()
 
     def loadGui(self):
         self.MainWindow.show()
