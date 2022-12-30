@@ -67,7 +67,7 @@ class Gui:
         self.Medium = QPushButton(self.Main)
         self.Hard = QPushButton(self.Main)
         self.Insane = QPushButton(self.Main)
-        
+
         # Properties for objects inside Main-Widget
         # -- Label "Sudoku" 
         self.HeaderPage1.setObjectName(u"HeaderPage1")
@@ -457,8 +457,8 @@ class Gui:
     def eventHandler(self, event):
         # This function represents the event handeling functionality
         # Each UI element(e.g buttons) have diffrent evenst thats beeing handled here  
-        # With newly introduced match -> case statement from Python 3.11
-        # So Python 3.11 is needed atm --> may be later changed to if -> elif statements 
+        # With newly introduced match -> case statement from Python 3.10
+        # So Python 3.10 is needed atm --> may be later changed to if -> elif statements 
         match event:
             case "Easy":
                 self.createTable()
