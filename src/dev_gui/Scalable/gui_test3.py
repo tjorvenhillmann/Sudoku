@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 from styles import BorderStyleSheets
 from copy import deepcopy
 from random import choice
+from generator import * 
 
 class SudokuCell(QLabel):
     # Sudoku cell class constructor
@@ -103,14 +104,13 @@ class SudokuCell(QLabel):
 
 class Sudoku_UI():
     # Gui class constructor
-    def __init__(self, gameGrid, checkGrid):
+    def __init__(self):
         # Create MainWindow 
         self.MainWindow = QMainWindow()
-        # Store grids for testing purposes 
-        self.gameGrid = gameGrid
-        self.checkGrid = checkGrid 
-        # This grid changes according to users inputs
-        self.userGrid = deepcopy(gameGrid)
+        # Create empty list for both game and solved boards 
+        # -> needed so that the reference always stays the same 
+        self.gameGrid = list()
+        self.solvedGrid = list()
         # Empty list for storing all Sudoku_Cell instances
         self.cells = [[0]*9 for x in range(9)]
         # List of empty cells for faster hint function 
@@ -325,8 +325,7 @@ class Sudoku_UI():
         self.BoardLayout.setSpacing(0)
         self.BoardLayout.setObjectName(u"BoardLayout")
 
-        # Add all SudokuCell instances to the board 
-        self.createBoard()
+        # Pre place the layout for all the sudoku cells 
         self.ContainerLayout.addLayout(self.BoardLayout)
 
         self.ButtonLayout = QVBoxLayout()
@@ -438,6 +437,13 @@ class Sudoku_UI():
                 # Store instance into 2D list for later acces
                 self.cells[r][c] = newCell
 
+    def generateBoards(self, clues):
+        # In this function the three neeeded boards will be created 
+        # Under the use of the included generator class
+        self.gameGrid, self.solvedGrid = boardGenerator(clues) 
+        self.userGrid = deepcopy(self.gameGrid)
+        self.createBoard()
+
     def fillBoard(self):
         for r in range(9):
             for c in range(9):
@@ -455,12 +461,19 @@ class Sudoku_UI():
             for c in range(9):
                 self.cells[r][c].removeCellText()
 
+    def removeOldBoardData(self):
+        # Remove old data for avoiding double references 
+        self.gameGrid.clear()
+        self.solvedGrid.clear()
+
     def solveBoard(self):
         if len(self.emptyCells) > 0:
             for r in range(9):
                 for c in range(9):
                     # Display numbers inside the grid 
-                    self.cells[r][c].setCellText(self.checkGrid[r][c])
+                    self.cells[r][c].setCellText(self.solvedGrid[r][c])
+                    # Empty cells have to be set to zero remaining empty cells 
+                    self.emptyCells.clear()
                     # Disable the check button and put the background color to green
                     self.Check.setEnabled(False)
                     self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
@@ -473,15 +486,21 @@ class Sudoku_UI():
             self.emptyCells.remove((r,c))
             
             # Take element from solved grid and set it inside the cell
-            self.cells[r][c].setCellText(self.checkGrid[r][c])
-
+            self.cells[r][c].setCellText(self.solvedGrid[r][c])
+            #self.cells[r][c].focusInEvent(event = 1)
             # Store the number inside the userGrid as solved number
-            self.userGrid[r][c] = self.checkGrid[r][c]
+            self.userGrid[r][c] = self.solvedGrid[r][c]
+        else:
+            # Board is fully filled and check button can be set to green and disabled
+            self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
+            self.Check.setEnabled(False)
 
     def checkBoard(self):
         # Compare user and check grid 
-        if self.userGrid == self.checkGrid:
+        if self.userGrid == self.solvedGrid:
             self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
+            # When board is correctly solved Timer can be stopped 
+            self.Timer.stop()
             return True
         else:
             self.Check.setStyleSheet(u"background-color: rgba(200, 0, 0, 0.4)")
@@ -497,6 +516,12 @@ class Sudoku_UI():
         # Update the timer inside the game window
         self.TimeViewer.setTime(self.runtime) 
 
+    def resetTime(self):
+        # Reset time on quit or clear button clicked events -> done through the eventHandler()
+        self.Timer.stop()
+        self.runtime.setHMS(0,0,0)
+        self.TimeViewer.setTime(self.runtime)
+
     def eventHandler(self, event):
         # This function represents the event handeling functionality
         # Each UI element(e.g buttons) have diffrent evenst thats beeing handled here  
@@ -504,25 +529,38 @@ class Sudoku_UI():
         # So Python 3.10 is needed atm --> may be later changed to if -> elif statements 
         match event:
             case "Easy":
+                # Generate boards with 50 remaining numbers
+                self.generateBoards(50)
                 self.fillBoard()
                 return self.Windows.setCurrentIndex(1)
             case "Medium":
+                self.generateBoards(40)
+                self.fillBoard()
                 return self.Windows.setCurrentIndex(1)
             case "Hard":
-                pass
+                self.generateBoards(30)
+                self.fillBoard()
+                return self.Windows.setCurrentIndex(1)
             case "Insane":
                 pass
             case "Hint":
                 self.setHint()
             case "Solve":
+                # Stop timer because board is solved
+                self.Timer.stop()
                 self.solveBoard()
             case "Clear":
+                self.resetTime()
                 self.resetBoard()
                 self.fillBoard()
+                self.Check.setStyleSheet("")
+                self.Check.setEnabled(True)
             case "Check":
                 self.checkBoard()
             case "Quit":
+                self.resetTime()
                 self.resetBoard()
+                self.removeOldBoardData()
                 # Set background color to default
                 self.Check.setStyleSheet("")
                 self.Check.setEnabled(True)
@@ -559,29 +597,9 @@ class Sudoku_UI():
 
 
 def main():
-    # Default board for testing purposes 
-    gameGrid  = [[7,8,0,4,0,0,1,2,0],
-                 [6,0,0,0,7,5,0,0,9],
-                 [0,0,0,6,0,1,0,7,8],
-                 [0,0,7,0,4,0,2,6,0],
-                 [0,0,1,0,5,0,9,3,0],
-                 [9,0,4,0,6,0,0,0,5],
-                 [0,7,0,3,0,0,0,1,2],
-                 [1,2,0,0,0,7,4,0,0],
-                 [0,4,9,2,0,6,0,0,7]]
-    
-    checkGrid = [[7,8,5,4,3,9,1,2,6],
-                 [6,1,2,8,7,5,3,4,9],
-                 [4,9,3,6,2,1,5,7,8],
-                 [8,5,7,9,4,3,2,6,1],
-                 [2,6,1,7,5,8,9,3,4],
-                 [9,3,4,1,6,2,7,8,5],
-                 [5,7,8,3,9,4,6,1,2],
-                 [1,2,6,5,8,7,4,9,3],
-                 [3,4,9,2,1,6,8,5,7]]
 
     app = QApplication([])
-    ui = Sudoku_UI(gameGrid, checkGrid)
+    ui = Sudoku_UI()
     ui.setupUi()
     ui.loadUi()
     app.exec()
