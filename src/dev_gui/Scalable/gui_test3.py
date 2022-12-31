@@ -60,8 +60,7 @@ class SudokuCell(QLabel):
     # Update the number of current cell
     def setElements(self):
         # Local variable definitions
-        numberStr = ""
-        counter = 0
+        numberStr = str()
 
         # If only a single number for this cell, add it to the userGrid
         if len(self.numberSet) == 1:
@@ -74,14 +73,12 @@ class SudokuCell(QLabel):
             self.setFont(self.defaultFont)
             self.userGrid[self.row][self.column] = 0
             # Loop for wrapping text
-            for number in self.numberSet:
+            for x, number in enumerate(self.numberSet):
                 # After 3 numbesr insert line break 
                 # Manual line break is needed because of sizePolicy "expanding"
-                if counter == 3:
+                if not (x % 3) and x != 0:
                     numberStr += "\n"
-                    counter = 0
-                numberStr += str(number) + " "
-                counter += 1
+                numberStr += (str(number) + " ")
 
         # Display text in cell
         self.setText(numberStr)	
