@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from styles import BorderStyleSheets
 from copy import deepcopy
 from random import choice
-from generator import * 
+from generatorV2 import * 
 
 class SudokuCell(QLabel):
     # Sudoku cell class constructor
