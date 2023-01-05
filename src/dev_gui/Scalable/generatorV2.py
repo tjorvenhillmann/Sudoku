@@ -14,7 +14,7 @@ class Generator:
                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-        # Counter variable for the  
+        # Counter variable for the 
         self.counter = 1
 
 
@@ -27,6 +27,16 @@ class Generator:
 
         # The grid is complete 
         return True
+    
+    def checkSquare(self, grid:list, row:int, col:int) -> list:
+        #Check in 3x3 Square
+        c0 = (col//3)*3
+        r0 = (row//3)*3
+        square = []
+        for r in range(3):
+            for c in range(3):
+                square.append(self.grid[r0+r][c0+c]) 
+        return square
 
     def solveGrid(self, grid):
         # Find next empty cell to solve
@@ -38,45 +48,13 @@ class Generator:
                     # Check that this number is not alreday used in this row
                     if value not in grid[row]:
                         # Check if this number is not already used in this column
-                        if value not in (grid[0][col],
-                                         grid[1][col],
-                                         grid[2][col],
-                                         grid[3][col],
-                                         grid[4][col],
-                                         grid[5][col],
-                                         grid[6][col],
-                                         grid[7][col],
-                                         grid[8][col]):
+                        if value not in (grid[r][col] for r in range(9)):
                             # Identify in which of the 9 squares were are working
-                            # Empty square is an a 2D-list 
-                            square = []
-                            # Top squares 3x3
-                            if row < 3: 
-                                if col < 3:
-                                    square = [grid[k][0:3] for k in range(0,3)]
-                                elif col < 6:
-                                    square = [grid[k][3:6] for k in range(0,3)]
-                                else:
-                                    square = [grid[k][6:9] for k in range(0,3)]
-                            # Middle squares 3x3
-                            elif row < 6:  
-                                if col < 3:
-                                    square = [grid[k][0:3] for k in range(3,6)]
-                                elif col < 6:
-                                    square = [grid[k][3:6] for k in range(3,6)]
-                                else:
-                                    square = [grid[k][6:9] for k in range(3,6)]
-                            # Bottom squares 3x3
-                            else: 
-                                if col < 3:
-                                    square = [grid[k][0:3] for k in range(6,9)]
-                                elif col < 6:
-                                    square = [grid[k][3:6] for k in range(6,9)]
-                                else:
-                                    square = [grid[k][6:9] for k in range(6,9)]
+                            # Empty square is an a 2D-list
+                            square = self.checkSquare(grid, row, col)
                             
                             # Check that this number is not already be used on this 3x3 square
-                            if value not in (square[0] + square[1] + square[2]):
+                            if value not in (square):
                                 grid[row][col] = value
                                 if self.checkGrid(grid):
                                     self.counter += 1
@@ -90,7 +68,6 @@ class Generator:
     def fillGrid(self):
         # Number list needed for the shuffel function
         numberList = [1,2,3,4,5,6,7,8,9]
-        
         # Find next empty cell to solve
         for i in range(0,81):
             row = i//9 # Needed to get on 9th cell row = 1 and thats the 2nd row of the grid 
@@ -101,45 +78,13 @@ class Generator:
                     # Check that this number is not alreday used in this row
                     if value not in self.grid[row]:
                         # Check if this number is not already used in this column
-                        if value not in (self.grid[0][col],
-                                         self.grid[1][col],
-                                         self.grid[2][col],
-                                         self.grid[3][col],
-                                         self.grid[4][col],
-                                         self.grid[5][col],
-                                         self.grid[6][col],
-                                         self.grid[7][col],
-                                         self.grid[8][col]):
+                        if value not in (self.grid[r][col] for r in range(9)):
+
                             # Identify in which of the 9 squares were are working
                             # Empty square is an a 2D-list 
-                            square = []
-                            # Top squares 3x3
-                            if row < 3: 
-                                if col < 3:
-                                    square = [self.grid[k][0:3] for k in range(0,3)]
-                                elif col < 6:
-                                    square = [self.grid[k][3:6] for k in range(0,3)]
-                                else:
-                                    square = [self.grid[k][6:9] for k in range(0,3)]
-                            # Middle squares 3x3
-                            elif row < 6:  
-                                if col < 3:
-                                    square = [self.grid[k][0:3] for k in range(3,6)]
-                                elif col < 6:
-                                    square = [self.grid[k][3:6] for k in range(3,6)]
-                                else:
-                                    square = [self.grid[k][6:9] for k in range(3,6)]
-                            # Bottom squares 3x3
-                            else: 
-                                if col < 3:
-                                    square = [self.grid[k][0:3] for k in range(6,9)]
-                                elif col < 6:
-                                    square = [self.grid[k][3:6] for k in range(6,9)]
-                                else:
-                                    square = [self.grid[k][6:9] for k in range(6,9)]
-                            
+                            square = self.checkSquare(self.grid, row, col)
                             # Check that this number is not already be used on this 3x3 square
-                            if value not in (square[0] + square[1] + square[2]):
+                            if value not in (square):
                                 self.grid[row][col] = value
                                 if self.checkGrid(self.grid):
                                     return True
@@ -147,6 +92,7 @@ class Generator:
                                     if self.fillGrid():
                                         return True 
                 break
+        #Setting back to Zero
         self.grid[row][col] = 0
 
     def print_board(self):
@@ -200,7 +146,7 @@ class Generator:
     
     def sudoku(self, remaining:int)->tuple:
         #Return Method for Sudoku game, the solved and the game board are returned in a tuple, to do so we need a complete copy
-        #Gen Full Board == Solved Board
+        #Generatetd Full Board == Solved Board
         self.fillGrid()
         solved_board = []
         for r in range(0,9):
@@ -219,7 +165,7 @@ class Generator:
         return(boards)
 
 
-def test():
+def testing():
     # From empty grid to a solvable puzzle
     g = Generator()
     time_start = time()
@@ -235,14 +181,6 @@ def test():
     g.print_board()
     print("Sudoku Grid Ready")
 
-#needs to be used like this
-def main():
-    g = Generator()
-    boards = g.sudoku(100)
-    solved, game = boards
-    print('Solved:\n', solved)
-    print('Game:\n', game)
-
 def boardGenerator(clues):
     g = Generator()
     boards = g.sudoku(clues)
@@ -251,4 +189,13 @@ def boardGenerator(clues):
     return game, solved
 
 if __name__ == "__main__":
-    main()
+    game, solved = boardGenerator(35)
+    count = 0
+    for i in game:
+        for element in i:
+            if element != 0:
+                count += 1
+    
+    print(count)
+    print('Game: ', game)
+    print('Solved: ', solved)

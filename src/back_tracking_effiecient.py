@@ -2,7 +2,7 @@ import copy
 
 class Sudoku:
     def __init__(self) -> None:
-        self.solved = []
+        self.solved = list
         self.grid = [
                     [2,0,0,0,0,0,0,0,0],
                     [0,9,8,0,0,6,0,0,0],
@@ -29,12 +29,15 @@ class Sudoku:
         #Check in 3x3 Square
         c0 = (col//3)*3
         r0 = (row//3)*3
+        square = []
         for r in range(3):
             for c in range(3):
+                square.append(self.grid[r0+r][c0+c])
                 if self.grid[r0+r][c0+c] == val:
                     return False
         
         #If Number is not in Row, Column or Square
+        print(square)
         return True
 
     #Iter trough the whole grid
