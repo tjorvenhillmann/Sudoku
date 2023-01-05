@@ -189,8 +189,6 @@ class Generator:
                     game_board[r].append(self.grid[r][c])
         
         return solved_board, game_board
-        # boards = (solved_board, game_board)
-        # return(boards)
 
 def testing():
     # From empty grid to a solvable puzzle
@@ -213,13 +211,6 @@ def testing():
                 count += 1
     
     print("\nRemaining Numbers:", count)
-
-def boardGenerator(clues: int) -> tuple:
-    g = Generator()
-    boards = g.sudoku(clues)
-    solved, game = boards
-
-    return game, solved
 
 if __name__ == "__main__":
     testing()
