@@ -31,18 +31,17 @@ class Generator:
         # The grid is complete
         return True
     
-    def checkSquare(self, grid:list, row:int, col:int) -> list:
+    def getSquare(self, grid:list, row:int, col:int) -> list:
         '''
         This Function will return a list of the numbers from the 3x3 sqaure in that the cell is located
         '''
-
         # Check in 3x3 Square
         c0 = (col//3)*3
         r0 = (row//3)*3
         square = []
         for r in range(3):
             for c in range(3):
-                square.append(self.grid[r0+r][c0+c]) 
+                square.append(grid[r0+r][c0+c]) 
         return square
 
     def solveGrid(self, grid:list) -> bool:
@@ -59,7 +58,7 @@ class Generator:
                         if value not in (grid[r][col] for r in range(9)):
                             # Identify in which of the 9 squares were are working
                             # Empty square is an a 2D-list
-                            square = self.checkSquare(grid, row, col)
+                            square = self.getSquare(grid, row, col)
                             
                             # Check that this number is not already be used on this 3x3 square
                             if value not in (square):
@@ -95,7 +94,7 @@ class Generator:
                         # Check if this number is not already used in this column
                         if value not in (self.grid[r][col] for r in range(9)):
                             # Identify in which of the 9 squares were are working
-                            square = self.checkSquare(self.grid, row, col)
+                            square = self.getSquare(self.grid, row, col)
                             # Check that this number is not already be used on this 3x3 square
                             if value not in (square):
                                 self.grid[row][col] = value
@@ -184,7 +183,7 @@ def testing():
     g.print_board()
     print()
     time_start = time()
-    g.reduceGrid(36)
+    g.reduceGrid(30)
     time_end = time()
     print(f"Time to reduce grid: {time_end - time_start} secs")
     g.print_board()
