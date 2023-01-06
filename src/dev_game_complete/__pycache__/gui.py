@@ -113,6 +113,10 @@ class Sudoku_UI():
         # List of empty cells for faster hint function 
         # Random selection is way faster when only used on empty cells 
         self.emptyCells = list()
+        # Solving flag to avoid storing the score if game was quitted before solving
+        self.solvedFlag = 0
+        # Solving method flag -> when 1 auto-solved
+        self.solvingMethodFlag = 0
         # Create hint counter
         self.hintCounter = 0
         # Diffulty string
@@ -190,7 +194,6 @@ class Sudoku_UI():
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setSpacing(6)
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.horizontalLayout_5.setContentsMargins(50, 0, -1, -1)
         self.LabelScoreBoard = QLabel(self.Main)
         self.LabelScoreBoard.setObjectName(u"LabelScoreBoard")
         sizePolicy1.setHeightForWidth(self.LabelScoreBoard.sizePolicy().hasHeightForWidth())
@@ -212,25 +215,39 @@ class Sudoku_UI():
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setSizeConstraint(QLayout.SetMaximumSize)
-        self.horizontalLayout_2.setContentsMargins(50, -1, 50, -1)
-        self.listView = QListView(self.Main)
-        self.listView.setObjectName(u"listView")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.ScoreTable = QTableWidget(self.Main)
+        self.ScoreTable.setObjectName(u"ScoreTable")
+        self.ScoreTable.setColumnCount(4)
+        headerFont = QFont()
+        headerFont.setPointSize(9)
+        headerFont.setBold(True)
+        headerFont.setWeight(75)
+        diffcultyHeader = QTableWidgetItem()
+        diffcultyHeader.setFont(headerFont)
+        timeHeader = QTableWidgetItem()
+        timeHeader.setFont(headerFont)
+        hintHeader = QTableWidgetItem()
+        hintHeader.setFont(headerFont)
+        solverHeader = QTableWidgetItem()
+        solverHeader.setFont(headerFont)
+        self.ScoreTable.setHorizontalHeaderItem(0, diffcultyHeader)
+        self.ScoreTable.setHorizontalHeaderItem(1, timeHeader)
+        self.ScoreTable.setHorizontalHeaderItem(2, hintHeader)
+        self.ScoreTable.setHorizontalHeaderItem(3, solverHeader)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.listView.sizePolicy().hasHeightForWidth())
-        self.listView.setSizePolicy(sizePolicy2)
-        self.listView.setStyleSheet(u"")
-        self.listView.setFrameShape(QFrame.Box)
-        self.listView.setFrameShadow(QFrame.Plain)
-        self.listView.setLineWidth(1)
-        self.listView.setMidLineWidth(1)
-        self.listView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.listView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.listView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        sizePolicy2.setHeightForWidth(self.ScoreTable.sizePolicy().hasHeightForWidth())
+        self.ScoreTable.setSizePolicy(sizePolicy2)
+        self.ScoreTable.setFrameShape(QFrame.Box)
+        self.ScoreTable.setFrameShadow(QFrame.Plain)
+        self.ScoreTable.setLineWidth(2)
+        self.ScoreTable.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.ScoreTable.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ScoreTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.ScoreTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-        self.horizontalLayout_2.addWidget(self.listView)
-
+        self.horizontalLayout_2.addWidget(self.ScoreTable)
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
@@ -240,7 +257,6 @@ class Sudoku_UI():
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setContentsMargins(50, -1, -1, -1)
         self.LabelNewGame = QLabel(self.Main)
         self.LabelNewGame.setObjectName(u"LabelNewGame")
         sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
@@ -265,11 +281,14 @@ class Sudoku_UI():
         self.horizontalLayout.setSpacing(50)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setSizeConstraint(QLayout.SetMinimumSize)
-        self.horizontalLayout.setContentsMargins(50, 0, 50, 25)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 25)
         self.Easy = QPushButton(self.Main)
-        self.Easy.setObjectName(u"Easy")
-        sizePolicy3.setHeightForWidth(self.Easy.sizePolicy().hasHeightForWidth())
-        self.Easy.setSizePolicy(sizePolicy3)
+        self.Easy.setObjectName(u"Easy")        
+        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.Easy.sizePolicy().hasHeightForWidth())
+        self.Easy.setSizePolicy(sizePolicy4)
         font4 = QFont()
         font4.setPointSize(11)
         self.Easy.setFont(font4)
@@ -278,9 +297,6 @@ class Sudoku_UI():
 
         self.Medium = QPushButton(self.Main)
         self.Medium.setObjectName(u"Medium")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.Medium.sizePolicy().hasHeightForWidth())
         self.Medium.setSizePolicy(sizePolicy4)
         self.Medium.setFont(font4)
@@ -304,6 +320,8 @@ class Sudoku_UI():
         self.verticalLayout_3.addItem(self.verticalSpacer_3)
 
         self.Windows.addWidget(self.Main)
+
+        self.addScoresToBoard()
 
     def setupGamePage(self):
         self.Game = QWidget()
@@ -410,6 +428,10 @@ class Sudoku_UI():
         self.MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sudoku", None))
         self.HeaderPage1.setText(QCoreApplication.translate("MainWindow", u"SUDOKU", None))
         self.LabelScoreBoard.setText(QCoreApplication.translate("MainWindow", u"ScoreBoard:", None))
+        self.ScoreTable.horizontalHeaderItem(0).setText(QCoreApplication.translate("MainWindow", u"Difficulty", None))
+        self.ScoreTable.horizontalHeaderItem(1).setText(QCoreApplication.translate("MainWindow", u"Time", None))
+        self.ScoreTable.horizontalHeaderItem(2).setText(QCoreApplication.translate("MainWindow", u"Hints", None))
+        self.ScoreTable.horizontalHeaderItem(3).setText(QCoreApplication.translate("MainWindow", u"Solver", None))
         self.LabelNewGame.setText(QCoreApplication.translate("MainWindow", u"New Game:", None))
         self.Easy.setText(QCoreApplication.translate("MainWindow", u"\nEasy\n", None))
         self.Medium.setText(QCoreApplication.translate("MainWindow", u"\nMedium\n", None))
@@ -439,6 +461,11 @@ class Sudoku_UI():
         self.createBoard()
 
     def fillBoard(self):
+        # Reset counters and flags from previous run if multiple games where played 
+        self.solvingFlag = 0  
+        self.hintCounter = 0
+        
+        # Main loop for setting sudoku cell text to generated numbers
         for r in range(9):
             for c in range(9):
                 # Set text for new cell
@@ -448,9 +475,7 @@ class Sudoku_UI():
                     self.emptyCells.append((r,c))
         
         # Atfer board is filled -> starting the timer
-        self.Timer.start(1000)  
-        # Reset hint counter 
-        self.hintCounter = 0
+        self.Timer.start(1000) 
 
     def resetBoard(self):
         for r in range(9):
@@ -473,6 +498,9 @@ class Sudoku_UI():
                     # Disable the check button and put the background color to green
                     self.Check.setEnabled(False)
                     self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
+
+        self.solvedFlag = 1
+        self.solvingMethodFlag = 1
 
     def setHint(self):
         # Check if there are empty cells left in the board
@@ -502,10 +530,10 @@ class Sudoku_UI():
             self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
             # When board is correctly solved Timer can be stopped 
             self.Timer.stop()
-            return True
+            self.solvedFlag = 1
         else:
             self.Check.setStyleSheet(u"background-color: rgba(200, 0, 0, 0.4)")
-            return False
+            self.solvedFlag = 0
 
     def updateTime(self):
         # Adding a second to the runtime
@@ -523,14 +551,40 @@ class Sudoku_UI():
         self.runtime.setHMS(0,0,0)
         self.TimeViewer.setTime(self.runtime)
 
+    def addScoresToBoard(self):
+        # First we need to read the content of scores.txt
+        file = open('scores.txt', 'r')
+        lines = file.readlines()
+        # Delete all rows to avoid adding rows twice or more
+        self.ScoreTable.setRowCount(0)
+        for line in lines:
+            line = line.strip("\n")
+            elements = line.split(",")
+            self.ScoreTable.insertRow(self.ScoreTable.rowCount())
+            for index, element in enumerate(elements):
+                item = QTableWidgetItem(element)
+                item.setTextAlignment(Qt.AlignCenter)
+                self.ScoreTable.setItem(self.ScoreTable.rowCount()-1, index, item)
+
     def storeScore(self):
-        datei = open('scores.txt', 'a+')
-        print(datei.read())
-            #newScore = self.diffStr + "," + str(self.runtime) + "," + str(self.hintCounter)
-        datei.write('Das ist die erste Zeile,\n')
-        datei.write('und das die zweite,\n')
-        datei.write('und das die dritte und letzte.')
-        datei.close()
+        # Check if the board is solved before closing
+        if self.solvedFlag == 1:
+            # Open to score text file in appeding + reading mode (a+)
+            file = open('scores.txt', 'a+')
+            # Create default string for solving method
+            solvingMethod = "player"
+            # Change solving method string when auto.solving was used
+            if self.solvingMethodFlag == 1:
+                solvingMethod = "auto"
+            # Generate new Score string 
+            newScore = self.diffStr + "," + self.runtime.toString("hh:mm:ss") + "," + str(self.hintCounter) + "," + solvingMethod + "\n"
+            # Write score string to text file
+            file.writelines(newScore)
+            # Close file properly
+            file.close()
+
+        # When new scores have been safed, we have to update the table 
+        self.addScoresToBoard()
 
     def eventHandler(self, event):
         # This function represents the event handeling functionality
@@ -569,10 +623,10 @@ class Sudoku_UI():
             case "Check":
                 self.checkBoard()
             case "Quit":
+                self.storeScore()
                 self.resetTime()
                 self.resetBoard()
                 self.removeOldBoardData()
-                self.storeScore()
                 # Set background color to default
                 self.Check.setStyleSheet("")
                 self.Check.setEnabled(True)
