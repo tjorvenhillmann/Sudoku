@@ -291,14 +291,6 @@ class Sudoku_UI():
 
         self.horizontalLayout.addWidget(self.Hard)
 
-        self.Insane = QPushButton(self.Main)
-        self.Insane.setObjectName(u"Insane")
-        sizePolicy4.setHeightForWidth(self.Insane.sizePolicy().hasHeightForWidth())
-        self.Insane.setSizePolicy(sizePolicy4)
-        self.Insane.setFont(font4)
-
-        self.horizontalLayout.addWidget(self.Insane)
-
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
@@ -418,7 +410,6 @@ class Sudoku_UI():
         self.Easy.setText(QCoreApplication.translate("MainWindow", u"\nEasy\n", None))
         self.Medium.setText(QCoreApplication.translate("MainWindow", u"\nMedium\n", None))
         self.Hard.setText(QCoreApplication.translate("MainWindow", u"\nHard\n", None))
-        self.Insane.setText(QCoreApplication.translate("MainWindow", u"\nInsane\n", None))
         self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"HH:mm:ss", None))
         self.AutoSolve.setText(QCoreApplication.translate("MainWindow", u"Auto-Solve", None))
         self.Hint.setText(QCoreApplication.translate("MainWindow", u"Hint", None))
@@ -540,8 +531,6 @@ class Sudoku_UI():
                 self.generateBoards(30)
                 self.fillBoard()
                 return self.Windows.setCurrentIndex(1)
-            case "Insane":
-                pass
             case "Hint":
                 self.setHint()
             case "Solve":
@@ -576,7 +565,6 @@ class Sudoku_UI():
         self.Easy.clicked.connect(lambda: self.eventHandler("Easy"))
         self.Medium.clicked.connect(lambda: self.eventHandler("Medium"))
         self.Hard.clicked.connect(lambda: self.eventHandler("Hard"))
-        self.Insane.clicked.connect(lambda: self.eventHandler("Insane"))
         
         # Events from game page
         self.Timer.timeout.connect(self.updateTime) 
