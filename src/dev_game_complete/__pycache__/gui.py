@@ -7,7 +7,10 @@ from random import choice
 from generator import * 
 
 class SudokuCell(QLabel):
-    # Sudoku cell class constructor
+    '''
+    Description has to be done!
+    '''
+
     def __init__(self, row , column, userGrid):
         super(QLabel, self).__init__()
         self.row = row 
@@ -35,14 +38,26 @@ class SudokuCell(QLabel):
 
     # Hightlight background of selected cell
     def focusInEvent(self, event):
+        '''
+        Description has to be done!
+        '''
+
         self.setStyleSheet("background-color: rgb(200, 200, 200);" + str(self.styles[self.row][self.column]))
     
     # Remove highlight from cell when unselected
     def focusOutEvent(self, event):
+        '''
+        Description has to be done!
+        '''
+
         self.setStyleSheet(str(self.styles[self.row][self.column]))
    
     # Place number inside Sudoku cell 
     def setCellText(self, number):
+        '''
+        Description has to be done!
+        '''
+
         # This function is only called when a single number is entered
         if (number != 0):
             self.setFont(self.cellFont)
@@ -53,12 +68,20 @@ class SudokuCell(QLabel):
 
     # Remove cell text 
     def removeCellText(self):
+        '''
+        Description has to be done!
+        '''
+
         self.setFont(self.defaultFont)
         self.setText("")
         self.readOnlyFlag = 0
 
     # Update the number of current cell
     def setElements(self):
+        '''
+        Description has to be done!
+        '''
+
         # Local variable definitions
         numberStr = str()
 
@@ -85,6 +108,10 @@ class SudokuCell(QLabel):
 
     # Add element to set 
     def addAndRemoveElement(self, elem = 0):
+        '''
+        Description has to be done!
+        '''
+
         if elem in self.numberSet:
             self.numberSet.remove(elem)
         else:
@@ -93,6 +120,10 @@ class SudokuCell(QLabel):
 
     # Keyboard input
     def keyPressEvent(self, event):
+        '''
+        Description has to be done!
+        '''
+        
         if (event.key() >= Qt.Key_1 and event.key() <= Qt.Key_9):
             # Check if the cell is not a clue 
             if not self.readOnlyFlag:
@@ -100,7 +131,10 @@ class SudokuCell(QLabel):
 
 
 class Sudoku_UI():
-    # Gui class constructor
+    '''
+    Description has to be done!
+    '''
+    
     def __init__(self):
         # Create MainWindow 
         self.MainWindow = QMainWindow()
@@ -129,6 +163,10 @@ class Sudoku_UI():
         self.g = Generator()
         
     def setupMainWindow(self):
+        '''
+        Description has to be done!
+        '''
+
         self.MainWindow.setWindowModality(Qt.NonModal)
         #self.MainWindow.resize(1024, 768)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -148,6 +186,10 @@ class Sudoku_UI():
         self.centralwidget.setObjectName(u"centralwidget")
 
     def setupWindows(self):
+        '''
+        Description has to be done!
+        '''
+
         self.horizontalLayout_14 = QHBoxLayout(self.centralwidget)
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
         self.Windows = QStackedWidget(self.centralwidget)
@@ -162,6 +204,10 @@ class Sudoku_UI():
         self.MainWindow.setCentralWidget(self.centralwidget)
 
     def setupMenuPage(self):
+        '''
+        Description has to be done!
+        '''
+
         self.Main = QWidget()
         self.Main.setObjectName(u"Main")
         self.Main.setAutoFillBackground(False)
@@ -324,6 +370,10 @@ class Sudoku_UI():
         self.addScoresToBoard()
 
     def setupGamePage(self):
+        '''
+        Description has to be done!
+        '''
+
         self.Game = QWidget()
         self.Game.setObjectName(u"Game")
         self.Game.setStyleSheet(u"")
@@ -425,6 +475,10 @@ class Sudoku_UI():
         self.horizontalLayout_14.addWidget(self.Windows)
 
     def retranslateUi(self):
+        '''
+        Description has to be done!
+        '''
+
         self.MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sudoku", None))
         self.HeaderPage1.setText(QCoreApplication.translate("MainWindow", u"SUDOKU", None))
         self.LabelScoreBoard.setText(QCoreApplication.translate("MainWindow", u"GameBoard:", None))
@@ -442,8 +496,23 @@ class Sudoku_UI():
         self.Clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.Check.setText(QCoreApplication.translate("MainWindow", u"Check", None))
         self.Quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
-      
+
+    def generateBoards(self, clues):
+        '''
+        Description has to be done!
+        '''
+
+        # In this function the three neeeded boards will be created 
+        # Under the use of the included generator class
+        self.solvedGrid, self.gameGrid = self.g.sudoku(clues) 
+        self.userGrid = deepcopy(self.gameGrid)
+        self.createBoard()
+
     def createBoard(self):
+        '''
+        Description has to be done!
+        '''
+
         for r in range(9):
             for c in range(9):
                 # Create new cell
@@ -453,14 +522,11 @@ class Sudoku_UI():
                 # Store instance into 2D list for later acces
                 self.cells[r][c] = newCell
 
-    def generateBoards(self, clues):
-        # In this function the three neeeded boards will be created 
-        # Under the use of the included generator class
-        self.solvedGrid, self.gameGrid = self.g.sudoku(clues) 
-        self.userGrid = deepcopy(self.gameGrid)
-        self.createBoard()
-
     def fillBoard(self):
+        '''
+        Description has to be done!
+        '''
+
         # Reset counters and flags from previous run if multiple games where played 
         self.solvingFlag = 0  
         self.hintCounter = 0
@@ -478,16 +544,28 @@ class Sudoku_UI():
         self.Timer.start(1000) 
 
     def resetBoard(self):
+        '''
+        Description has to be done!
+        '''
+
         for r in range(9):
             for c in range(9):
                 self.cells[r][c].removeCellText()
 
     def removeOldBoardData(self):
+        '''
+        Description has to be done!
+        '''
+
         # Remove old data for avoiding double references 
         self.gameGrid.clear()
         self.solvedGrid.clear()
 
     def solveBoard(self):
+        '''
+        Description has to be done!
+        '''
+
         if len(self.emptyCells) > 0:
             for r in range(9):
                 for c in range(9):
@@ -503,9 +581,12 @@ class Sudoku_UI():
         self.solvingMethodFlag = 1
 
     def setHint(self):
+        '''
+        Description has to be done!
+        '''
+
         # Check if there are empty cells left in the board
         if len(self.emptyCells) > 0:
-            print(len(self.emptyCells))
             # Choice lets us randomly choose an element from sequence
             r, c = choice(self.emptyCells)
             self.emptyCells.remove((r,c))
@@ -528,6 +609,10 @@ class Sudoku_UI():
             self.solvedFlag = 1
 
     def checkBoard(self):
+        '''
+        Description has to be done!
+        '''
+
         # Compare user and check grid 
         if self.userGrid == self.solvedGrid:
             self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
@@ -539,6 +624,10 @@ class Sudoku_UI():
             self.solvedFlag = 0
 
     def updateTime(self):
+        '''
+        Description has to be done!
+        '''
+
         # Adding a second to the runtime
         self.runtime = self.runtime.addSecs(1) # addSecs retruns a new runtime object 
         
@@ -549,34 +638,56 @@ class Sudoku_UI():
         self.TimeViewer.setTime(self.runtime) 
 
     def resetTime(self):
+        '''
+        Description has to be done!
+        '''
+
         # Reset time on quit or clear button clicked events -> done through the eventHandler()
         self.Timer.stop()
         self.runtime.setHMS(0,0,0)
         self.TimeViewer.setTime(self.runtime)
 
     def addScoresToBoard(self):
+        '''
+        Description has to be done!
+        '''
+
         # First we need to read the content of scores.txt
         file = open('scores.txt', 'r')
         lines = file.readlines()
         # Delete all rows to avoid adding rows twice or more
         self.ScoreTable.setRowCount(0)
+
+        # Go through each line and place elements into column
         for line in lines:
+            # Remove the line break so it's not disturbing inside the gameboard
             line = line.strip("\n")
+            # Create a list of elements 
             elements = line.split(",")
+            # Insert a new row into the table behind the last row
             self.ScoreTable.insertRow(self.ScoreTable.rowCount())
+            # Iterate through the element list and get index for column number
             for index, element in enumerate(elements):
+                # Create a new tablewidget item in which the element text is placed
                 item = QTableWidgetItem(element)
+                # Change the background  color of the cell according to the difficulty
                 if element == "Easy":
                     item.setBackground(QColor("green"))
                 elif element =="Medium":
                     item.setBackground(QColor("orange"))
                 elif element == "Hard":
                     item.setBackground(QColor("red"))
+                # Disable the item so the user cant change the text + center text
+                item.setFlags(Qt.ItemIsEnabled)
                 item.setTextAlignment(Qt.AlignCenter)
-                item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                # Finally place the item into the table widget to be displayed
                 self.ScoreTable.setItem(self.ScoreTable.rowCount()-1, index, item)
 
     def storeScore(self):
+        '''
+        Description has to be done!
+        '''
+
         # Check if the board is solved before closing
         if self.solvedFlag == 1:
             # Open to score text file in appeding + reading mode (a+)
@@ -597,6 +708,9 @@ class Sudoku_UI():
         self.addScoresToBoard()
 
     def eventHandler(self, event):
+        '''
+        Description has to be done!
+        '''
         # This function represents the event handeling functionality
         # Each UI element(e.g buttons) have diffrent evenst thats beeing handled here  
         # With newly introduced match -> case statement from Python 3.10
@@ -609,11 +723,13 @@ class Sudoku_UI():
                 self.diffStr = "Easy"
                 return self.Windows.setCurrentIndex(1)
             case "Medium":
+                # Generate boards with 40 remaining numbers
                 self.generateBoards(40)
                 self.fillBoard()
                 self.diffStr = "Medium"
                 return self.Windows.setCurrentIndex(1)
             case "Hard":
+                # Generate boards with 30 remaining numbers
                 self.generateBoards(30)
                 self.fillBoard()
                 self.diffStr = "Hard"
@@ -644,6 +760,9 @@ class Sudoku_UI():
                 return self.Windows.setCurrentIndex(0)
 
     def setupUi(self):
+        '''
+        Description has to be done!
+        '''
 
         self.setupMainWindow()
         self.setupWindows()
@@ -668,10 +787,17 @@ class Sudoku_UI():
         QMetaObject.connectSlotsByName(self.MainWindow)
 
     def loadUi(self):
+        '''
+        Description has to be done!
+        '''
+
         self.MainWindow.show()
 
 
 def main():
+    '''
+    Description has to be done!
+    '''
 
     app = QApplication([])
     ui = Sudoku_UI()
