@@ -113,6 +113,10 @@ class Sudoku_UI():
         # List of empty cells for faster hint function 
         # Random selection is way faster when only used on empty cells 
         self.emptyCells = list()
+        # Create hint counter
+        self.hintCounter = 0
+        # Diffulty string
+        self.diffStr = str()
         # Create runtime element 
         self.runtime = QTime()
         # Start time is zero
@@ -445,6 +449,8 @@ class Sudoku_UI():
         
         # Atfer board is filled -> starting the timer
         self.Timer.start(1000)  
+        # Reset hint counter 
+        self.hintCounter = 0
 
     def resetBoard(self):
         for r in range(9):
@@ -480,10 +486,15 @@ class Sudoku_UI():
             #self.cells[r][c].focusInEvent(event = 1)
             # Store the number inside the userGrid as solved number
             self.userGrid[r][c] = self.solvedGrid[r][c]
-        else:
+
+            # Add 1 to hint counter 
+            self.hintCounter += 1
+
+        if len(self.emptyCells) == 0:
             # Board is fully filled and check button can be set to green and disabled
             self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
             self.Check.setEnabled(False)
+            self.Timer.stop()
 
     def checkBoard(self):
         # Compare user and check grid 
@@ -512,6 +523,15 @@ class Sudoku_UI():
         self.runtime.setHMS(0,0,0)
         self.TimeViewer.setTime(self.runtime)
 
+    def storeScore(self):
+        datei = open('scores.txt', 'a+')
+        print(datei.read())
+            #newScore = self.diffStr + "," + str(self.runtime) + "," + str(self.hintCounter)
+        datei.write('Das ist die erste Zeile,\n')
+        datei.write('und das die zweite,\n')
+        datei.write('und das die dritte und letzte.')
+        datei.close()
+
     def eventHandler(self, event):
         # This function represents the event handeling functionality
         # Each UI element(e.g buttons) have diffrent evenst thats beeing handled here  
@@ -522,14 +542,17 @@ class Sudoku_UI():
                 # Generate boards with 50 remaining numbers
                 self.generateBoards(50)
                 self.fillBoard()
+                self.diffStr = "Easy"
                 return self.Windows.setCurrentIndex(1)
             case "Medium":
                 self.generateBoards(40)
                 self.fillBoard()
+                self.diffStr = "Medium"
                 return self.Windows.setCurrentIndex(1)
             case "Hard":
                 self.generateBoards(30)
                 self.fillBoard()
+                self.diffStr = "Hard"
                 return self.Windows.setCurrentIndex(1)
             case "Hint":
                 self.setHint()
@@ -549,6 +572,7 @@ class Sudoku_UI():
                 self.resetTime()
                 self.resetBoard()
                 self.removeOldBoardData()
+                self.storeScore()
                 # Set background color to default
                 self.Check.setStyleSheet("")
                 self.Check.setEnabled(True)
