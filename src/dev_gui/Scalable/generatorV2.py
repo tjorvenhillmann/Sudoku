@@ -103,12 +103,13 @@ class Generator:
                             # Check that this number is not already be used on this 3x3 square
                             if value not in (square):
                                 self.grid[row][col] = value
+                                #all cells filled
                                 if self.checkGrid(self.grid):
                                     return True
                                 else:
                                     if self.fillGrid():
                                         return True 
-                # all possibilities are done
+                # all possibilities are done, back tracking
                 break
         # Setting back to Zero
         self.grid[row][col] = 0
@@ -200,7 +201,7 @@ def testing():
     g.print_board()
     print()
     time_start = time()
-    g.reduceGrid(30)
+    g.reduceGrid(36)
     time_end = time()
     print(f"Time to reduce grid: {time_end - time_start} secs")
     g.print_board()
