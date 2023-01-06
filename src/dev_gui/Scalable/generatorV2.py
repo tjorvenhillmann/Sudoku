@@ -1,5 +1,6 @@
 from random import randint, shuffle
 from time import time
+from copy import deepcopy
 
 class Generator:
     '''
@@ -10,19 +11,11 @@ class Generator:
     To use the Generator more efficiently our GUI we have the Sudoku function.
     '''
     def __init__(self) -> None:
-        # Counter variable for reduce Grid
+        # Counter variable for possible Solutions
         self.counter = 1
 
         # Initialise empty 9x9 grid
-        self.grid = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        self.grid = [[0]*9 for x in range(9)]
 
 
     def checkGrid(self, grid:list) -> bool:
@@ -83,6 +76,9 @@ class Generator:
         grid[row][col] = 0
 
     def fillGrid(self) -> bool:
+        '''
+        
+        '''
         # Number list needed for the shuffel function
         numberList = [1,2,3,4,5,6,7,8,9]
         # Find next empty cell to solve
@@ -137,7 +133,7 @@ class Generator:
         '''
         # start value of numbers in puzzle, because grid is filled complete
         clues = 81
-        while clues >= remaining:
+        while clues > remaining:
             # Select a random cell that is not already empty
             row = randint(0,8)
             col = randint(0,8)
@@ -150,12 +146,7 @@ class Generator:
             self.grid[row][col] = 0
             
             # Take a full copy of the grid
-            # copyGrid = dc(self.grid)
-            copyGrid = []
-            for r in range(0,9):
-                copyGrid.append([])
-                for c in range(0,9):
-                    copyGrid[r].append(self.grid[r][c])
+            copyGrid = deepcopy(self.grid)
             
             # Count the number of solutions that this grid has
             self.counter = 0      
@@ -176,18 +167,10 @@ class Generator:
         # Return Method for Sudoku game, the solved and the game board are returned in a tuple, to do so we need a complete copy
         # Generatetd Full Board == Solved Board
         self.fillGrid()
-        solved_board = []
-        for r in range(0,9):
-                solved_board.append([])
-                for c in range(0,9):
-                    solved_board[r].append(self.grid[r][c])
+        solved_board = deepcopy(self.grid)
         # Reduce the numbers of the Board, depends on level
         self.reduceGrid(remaining)
-        game_board = []
-        for r in range(0,9):
-                game_board.append([])
-                for c in range(0,9):
-                    game_board[r].append(self.grid[r][c])
+        game_board = deepcopy(self.grid)
         
         return solved_board, game_board
 
