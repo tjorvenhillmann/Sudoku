@@ -117,6 +117,8 @@ class Sudoku_UI():
         self.runtime = QTime()
         # Start time is zero
         self.runtime.setHMS(0,0,0)
+        # Create object of generator class
+        self.g = Generator()
         
     def setupMainWindow(self):
         self.MainWindow.setWindowModality(Qt.NonModal)
@@ -437,7 +439,7 @@ class Sudoku_UI():
     def generateBoards(self, clues):
         # In this function the three neeeded boards will be created 
         # Under the use of the included generator class
-        self.gameGrid, self.solvedGrid = boardGenerator(clues) 
+        self.solvedGrid, self.gameGrid = self.g.sudoku(clues) 
         self.userGrid = deepcopy(self.gameGrid)
         self.createBoard()
 
