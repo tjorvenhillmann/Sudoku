@@ -1,9 +1,11 @@
-
 class BorderStyleSheets():
     '''
     This class contains the QT5 stylesheet for each sudoku cell 
     in the grid. Each stylesheet is stored in a list at it's
     corresponding x-y position in the grid.
+    The stylesheets only describe the border properties of each 
+    sudoku cell(QLabel) 
+    -> thats why the class is a called: "BorderStyleSheets"
     style: is a class variable that is later called by the UI class
            for access to each style when creating the board with 
            sudoku cells 
