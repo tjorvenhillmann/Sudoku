@@ -1,9 +1,21 @@
 
 class BorderStyleSheets():
+    '''
+    This class contains the QT5 stylesheet for each sudoku cell 
+    in the grid. Each stylesheet is stored in a list at it's
+    corresponding x-y position in the grid.
+    style: is a class variable that is later called by the UI class
+           for access to each style when creating the board with 
+           sudoku cells 
+    '''
+    
     def __init__(self) -> None:
         pass
+
+    # Create an empty 9x9 grid for the styling strings
     style = [[0]*9 for x in range(9)]
 
+    # Fill the list with the stylesheets
     style[0][0] = (u"border-top: 3px solid blue;\n"
 "border-left: 3px solid blue;\n"
 "border-right: 1px solid black;\n"
