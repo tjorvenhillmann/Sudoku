@@ -4,12 +4,22 @@ from copy import deepcopy
 
 class Generator:
     '''
-    Generator Class is the logic of a Sudoku Game. The Class contains the main funkctions of the Sudoku.
-    The Generator is build with the fillGrid and the reduceGrid function.
-    The Solver function will solve a Sudoku Puzzle and find a possible Solution using a Brute-Force (Backtracking) Algorithm.
+    Generator Class is the logic of a Sudoku Game. The Class contains the main funkctions of a Sudoku.
+    This class contains the following functions:
+    - checkGrid
+    - getSquare
+    - solveGrid
+    - fillGrid
+    - printBoard
+    - reduceGrid
+    - sudoku
 
-    To use the Generator more efficiently our GUI we have the Sudoku function.
+    The Generator is build with the fillGrid and the reduceGrid function.
+    The Solver function will solve a Sudoku Puzzle and find a possible Solution using a Brute-Force (back-tracking) algorithm.
+
+    To use the Generator more efficiently in our GUI we have the sudoku function.
     '''
+
     def __init__(self) -> None:
         # Counter variable for possible Solutions
         self.counter = 1
@@ -20,7 +30,9 @@ class Generator:
 
     def checkGrid(self, grid:list) -> bool:
         '''
-        This function checks every cell for a value other than zero -> validation
+        grid: list, contains the sudoku puzzle
+        This function checks every cell for a value other than zero
+        This function will return a bool to valid the grid.
         '''
         # iter trough grid
         for row in range(0,9):
@@ -28,11 +40,13 @@ class Generator:
                 # Grid is not solved completely
                 if grid[row][col] == 0:
                     return False
-        # The grid is complete
         return True
     
     def getSquare(self, grid:list, row:int, col:int) -> list:
         '''
+        grid: list, contains the sudoku puzzle
+        row: int, actual row of the cell
+        col: int, actual column of the cell
         This Function will return a list of the numbers from the 3x3 sqaure in that the cell is located
         '''
         # Check in 3x3 Square
@@ -45,6 +59,12 @@ class Generator:
         return square
 
     def solveGrid(self, grid:list) -> bool:
+        '''
+        grid: list, contains sudoku puzzle to solve
+        This Function will solve a sudoku by using a Brute-Force algorithm.
+        The algorithm will iter trough the empty cells and try if the value does fit. If not, back-tracking takes place and we restart the process.
+        This Function returns a bool, in this way we can use it recursive.
+        '''
         # Find next empty cell to solve
         for i in range(0,81):
             # iter trough grid by integer division for rows and modulo for colums to avoid for-loops and tabs(increases readability)
@@ -57,7 +77,6 @@ class Generator:
                         # Check if this number is not already used in this column
                         if value not in (grid[r][col] for r in range(9)):
                             # Identify in which of the 9 squares were are working
-                            # Empty square is an a 2D-list
                             square = self.getSquare(grid, row, col)
                             
                             # Check that this number is not already be used on this 3x3 square
@@ -76,7 +95,10 @@ class Generator:
 
     def fillGrid(self) -> bool:
         '''
-        
+        This Function will fill a blank grid. Therefore it will generate a random solution for the empty sudoku puzzle.
+        The variation of the Puzzle comes trough the shuffeling of the numbers 1-9 for each cell.
+        This function works with recursion, so it repeates itself. When there is no possible solution, the back-tracking will start and put the values back to zero (empty cell).
+        This Function returns a bool, in this way we can use it recursive.
         '''
         # Number list needed for the shuffel function
         numberList = [1,2,3,4,5,6,7,8,9]
@@ -95,6 +117,7 @@ class Generator:
                         if value not in (self.grid[r][col] for r in range(9)):
                             # Identify in which of the 9 squares were are working
                             square = self.getSquare(self.grid, row, col)
+
                             # Check that this number is not already be used on this 3x3 square
                             if value not in (square):
                                 self.grid[row][col] = value
@@ -109,7 +132,7 @@ class Generator:
         # Setting back to Zero
         self.grid[row][col] = 0
 
-    def print_board(self) -> None:
+    def printBoard(self) -> None:
         # Function to print a Game Board not in the list output in the terminal
         for i in range(len(self.grid)):
             if i % 3 == 0 and i != 0:
@@ -128,7 +151,7 @@ class Generator:
 
         This Function will remove numbers from the grid by setting them to 0.
         The difficult level is controlled by the remaining numbers in the puzzle.
-        17 is the minimum, because it´s the limit for a Puzzle with only one solution, will take a lot of time to generate, Python is not high performing enough.
+        17 is the minimum, because it`s the limit for a Puzzle with only one solution, will take a lot of time to generate, Python is not high performing enough.
         '''
         # start value of numbers in puzzle, because grid is filled complete
         clues = 81
@@ -161,9 +184,9 @@ class Generator:
     def sudoku(self, remaining:int)->tuple:
         '''
         remaining: int, control difficultness
-        This Function is a helper so you can create a new Puzzle in different Difficult-Levels by one call.
+        This Function is a helper, so you can create a new Puzzle in different Difficult-Levels by one call.
+        The Function returns a tuple, wich contains the solved and the game grid.
         '''
-        # Return Method for Sudoku game, the solved and the game board are returned in a tuple, to do so we need a complete copy
         # Generatetd Full Board == Solved Board
         self.fillGrid()
         solved_board = deepcopy(self.grid)
@@ -180,13 +203,13 @@ def testing():
     g.fillGrid()
     time_end = time()
     print(f"Time to generate grid: {time_end - time_start} secs")
-    g.print_board()
+    g.printBoard()
     print()
     time_start = time()
     g.reduceGrid(30)
     time_end = time()
     print(f"Time to reduce grid: {time_end - time_start} secs")
-    g.print_board()
+    g.printBoard()
     count = 0
     for row in g.grid:
         for element in row:
