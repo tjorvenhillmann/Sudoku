@@ -1,0 +1,3 @@
+Easy,00:00:02,0,auto
+Hard,00:00:00,0,auto
+Medium,00:00:08,5,auto
