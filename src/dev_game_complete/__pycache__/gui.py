@@ -1,5 +1,5 @@
 from PyQt5.QtCore import (QCoreApplication, QMetaObject, QTimer, QTime, Qt)
-from PyQt5.QtGui import (QCursor, QFont)
+from PyQt5.QtGui import (QCursor, QFont, QColor)
 from PyQt5.QtWidgets import *
 from styles import BorderStyleSheets
 from copy import deepcopy
@@ -427,7 +427,7 @@ class Sudoku_UI():
     def retranslateUi(self):
         self.MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sudoku", None))
         self.HeaderPage1.setText(QCoreApplication.translate("MainWindow", u"SUDOKU", None))
-        self.LabelScoreBoard.setText(QCoreApplication.translate("MainWindow", u"ScoreBoard:", None))
+        self.LabelScoreBoard.setText(QCoreApplication.translate("MainWindow", u"GameBoard:", None))
         self.ScoreTable.horizontalHeaderItem(0).setText(QCoreApplication.translate("MainWindow", u"Difficulty", None))
         self.ScoreTable.horizontalHeaderItem(1).setText(QCoreApplication.translate("MainWindow", u"Time", None))
         self.ScoreTable.horizontalHeaderItem(2).setText(QCoreApplication.translate("MainWindow", u"Hints", None))
@@ -505,6 +505,7 @@ class Sudoku_UI():
     def setHint(self):
         # Check if there are empty cells left in the board
         if len(self.emptyCells) > 0:
+            print(len(self.emptyCells))
             # Choice lets us randomly choose an element from sequence
             r, c = choice(self.emptyCells)
             self.emptyCells.remove((r,c))
@@ -523,6 +524,8 @@ class Sudoku_UI():
             self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
             self.Check.setEnabled(False)
             self.Timer.stop()
+            # Board is solved when last hint was placed 
+            self.solvedFlag = 1
 
     def checkBoard(self):
         # Compare user and check grid 
@@ -563,7 +566,14 @@ class Sudoku_UI():
             self.ScoreTable.insertRow(self.ScoreTable.rowCount())
             for index, element in enumerate(elements):
                 item = QTableWidgetItem(element)
+                if element == "Easy":
+                    item.setBackground(QColor("green"))
+                elif element =="Medium":
+                    item.setBackground(QColor("orange"))
+                elif element == "Hard":
+                    item.setBackground(QColor("red"))
                 item.setTextAlignment(Qt.AlignCenter)
+                item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 self.ScoreTable.setItem(self.ScoreTable.rowCount()-1, index, item)
 
     def storeScore(self):
