@@ -23,7 +23,6 @@ class Generator:
     def __init__(self) -> None:
         # Counter variable for possible Solutions
         self.counter = 1
-
         # Initialise empty 9x9 grid
         self.grid = [[0]*9 for x in range(9)]
 
@@ -145,13 +144,14 @@ class Generator:
                 else:
                     print(str(self.grid[i][j]) + " ", end="")
 
-    def reduceGrid(self, remaining:int) -> None:
+    def reduceGrid(self, remaining:int) -> float:
         '''
         remaining: int, control difficultness
 
         This Function will remove numbers from the grid by setting them to 0.
         The difficult level is controlled by the remaining numbers in the puzzle.
         17 is the minimum, because it`s the limit for a Puzzle with only one solution, will take a lot of time to generate, Python is not high performing enough.
+        This function returns the time in ms, that the solver needs to solve the puzzle
         '''
         # start value of numbers in puzzle, because grid is filled complete
         clues = 81
@@ -171,8 +171,10 @@ class Generator:
             copyGrid = deepcopy(self.grid)
             
             # Count the number of solutions that this grid has
-            self.counter = 0      
-            self.solveGrid(copyGrid)   
+            self.counter = 0
+            start_time = time()  
+            self.solveGrid(copyGrid)
+            end_time = time()   
             # If the number of solution is different from 1 then we need to cancel the change by putting the value we took away back in the grid
             if self.counter != 1:
                 self.grid[row][col] = backup
@@ -180,21 +182,24 @@ class Generator:
             # one number less in the puzzle
             else:
                 clues -= 1
+        # Solver Time in ms
+        solverTime = (end_time-start_time)*1000
+        return solverTime
     
     def sudoku(self, remaining:int)->tuple:
         '''
         remaining: int, control difficultness
         This Function is a helper, so you can create a new Puzzle in different Difficult-Levels by one call.
-        The Function returns a tuple, wich contains the solved and the game grid.
+        The Function returns a tuple, wich contains the solved grid, game grid and solver time.
         '''
         # Generatetd Full Board == Solved Board
         self.fillGrid()
         solved_board = deepcopy(self.grid)
         # Reduce the numbers of the Board, depends on level
-        self.reduceGrid(remaining)
+        solver_time = self.reduceGrid(remaining)
         game_board = deepcopy(self.grid)
         
-        return solved_board, game_board
+        return solved_board, game_board, solver_time
 
 def testing():
     # From empty grid to a solvable puzzle

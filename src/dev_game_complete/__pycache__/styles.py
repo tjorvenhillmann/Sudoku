@@ -342,31 +342,3 @@ class BorderStyleSheets():
 "border-left: 1px solid black;\n"
 "border-right: 3px solid blue;\n"
 "border-bottom: 3px solid blue;")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
