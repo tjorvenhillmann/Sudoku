@@ -209,19 +209,19 @@ def testing():
     time_end = time()
     print(f"Time to generate grid: {time_end - time_start} secs")
     g.printBoard()
-    print()
     time_start = time()
-    g.reduceGrid(30)
+    solver_time = g.reduceGrid(30)
     time_end = time()
-    print(f"Time to reduce grid: {time_end - time_start} secs")
+    print(f"\nTime to reduce grid: {time_end - time_start} secs")
     g.printBoard()
+    print(f"\nTime to solve reduced grid: {solver_time} msecs")
     count = 0
     for row in g.grid:
         for element in row:
             if element != 0:
                 count += 1
     
-    print("\nRemaining Numbers:", count)
+    print(f"Remaining Numbers: {count}\n")
 
 if __name__ == "__main__":
     testing()
