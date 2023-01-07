@@ -722,7 +722,7 @@ class Sudoku_UI():
         '''
 
         # First we need to read the content of scores.txt
-        file = open('scores.txt', 'r')
+        file = open('./scores.txt', 'r')
         lines = file.readlines()
         # Delete all rows to avoid adding rows twice or more
         self.ScoreTable.setRowCount(0)
@@ -762,7 +762,7 @@ class Sudoku_UI():
         # Check if the board is solved before closing
         if self.solvedFlag == 1:
             # Open to score text file in appeding + reading mode (a+)
-            file = open('scores.txt', 'a+')
+            file = open('./scores.txt', 'a+')
             # Create default string for solving method and time 
             solvingMethod = "player"
             time = self.runtime.toString("hh:mm:ss")
