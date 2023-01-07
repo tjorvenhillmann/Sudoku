@@ -123,7 +123,7 @@ class SudokuCell(QLabel):
         '''
         Description has to be done!
         '''
-        
+
         if (event.key() >= Qt.Key_1 and event.key() <= Qt.Key_9):
             # Check if the cell is not a clue 
             if not self.readOnlyFlag:
@@ -158,10 +158,14 @@ class Sudoku_UI():
         # Create runtime element 
         self.runtime = QTime()
         # Start time is zero
-        self.runtime.setHMS(0,0,0)
+        self.runtime.setHMS(0,0,0,0)
         # Create object of generator class
         self.g = Generator()
-        
+        # Variable fo time needed by the solver (ms)
+        self.solverTime = 0
+        # In this object the solver time is stored for displaying in the game
+        self.displaySolverTime = QTime()
+
     def setupMainWindow(self):
         '''
         Description has to be done!
@@ -504,7 +508,7 @@ class Sudoku_UI():
 
         # In this function the three neeeded boards will be created 
         # Under the use of the included generator class
-        self.solvedGrid, self.gameGrid = self.g.sudoku(clues) 
+        self.solvedGrid, self.gameGrid, self.solverTime = self.g.sudoku(clues)
         self.userGrid = deepcopy(self.gameGrid)
         self.createBoard()
 
@@ -577,6 +581,9 @@ class Sudoku_UI():
                     self.Check.setEnabled(False)
                     self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
 
+        # Set the solverTime
+        self.setSolverTime()
+
         self.solvedFlag = 1
         self.solvingMethodFlag = 1
 
@@ -623,6 +630,29 @@ class Sudoku_UI():
             self.Check.setStyleSheet(u"background-color: rgba(200, 0, 0, 0.4)")
             self.solvedFlag = 0
 
+    def setSolverTime(self):
+        '''
+        Description has to be done!
+        '''
+
+        # Rouding the time for solving to ms
+        solverTimeMS = int(round(self.solverTime))
+        secs = 0 
+        ms = 0
+        print(solverTimeMS)
+        #Check if the time is greater then 1000ms
+        if solverTimeMS >= 1000:
+            secs = solverTimeMS//1000
+            ms = solverTimeMS - (secs*1000)
+        else:
+            ms = solverTimeMS
+        # The time for solving as QTime format to be displayed in game
+        self.displaySolverTime.setHMS(0,0,secs,ms) 
+        # Set timeViewer to displaySolverTime 
+        self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"mm:ss.zzz", None))
+        print(self.displaySolverTime.toString("mm:ss.zzz"))
+        self.TimeViewer.setTime(self.displaySolverTime)
+
     def updateTime(self):
         '''
         Description has to be done!
@@ -644,9 +674,10 @@ class Sudoku_UI():
 
         # Reset time on quit or clear button clicked events -> done through the eventHandler()
         self.Timer.stop()
-        self.runtime.setHMS(0,0,0)
+        self.runtime.setHMS(0,0,0,0)
+        self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"hh:mm:ss", None))
         self.TimeViewer.setTime(self.runtime)
-
+    
     def addScoresToBoard(self):
         '''
         Description has to be done!
@@ -692,13 +723,16 @@ class Sudoku_UI():
         if self.solvedFlag == 1:
             # Open to score text file in appeding + reading mode (a+)
             file = open('scores.txt', 'a+')
-            # Create default string for solving method
+            # Create default string for solving method and time 
             solvingMethod = "player"
+            time = self.runtime.toString("hh:mm:ss")
             # Change solving method string when auto.solving was used
             if self.solvingMethodFlag == 1:
                 solvingMethod = "auto"
+                # Change time format to get ms as well
+                time = self.displaySolverTime.toString("mm:ss.zzz")
             # Generate new Score string 
-            newScore = self.diffStr + "," + self.runtime.toString("hh:mm:ss") + "," + str(self.hintCounter) + "," + solvingMethod + "\n"
+            newScore = self.diffStr + "," + time + "," + str(self.hintCounter) + "," + solvingMethod + "\n"
             # Write score string to text file
             file.writelines(newScore)
             # Close file properly

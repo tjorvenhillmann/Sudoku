@@ -8,3 +8,6 @@ Medium,00:00:08,41,player
 Easy,00:00:15,0,auto
 Hard,00:00:02,0,auto
 Medium,00:00:01,0,auto
+Medium,00:00.004,0,auto
+Medium,00:00.003,0,auto
+Easy,00:00.000,0,auto
