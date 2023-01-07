@@ -314,6 +314,7 @@ class Sudoku_UI():
         self.ScoreTable.setFrameShape(QFrame.Box)
         self.ScoreTable.setFrameShadow(QFrame.Plain)
         self.ScoreTable.setLineWidth(2)
+        self.ScoreTable.setMinimumWidth(540)
         self.ScoreTable.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.ScoreTable.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ScoreTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
