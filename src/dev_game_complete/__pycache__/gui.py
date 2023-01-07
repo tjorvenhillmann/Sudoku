@@ -175,8 +175,6 @@ class Sudoku_UI():
         self.runtime.setHMS(0,0,0,0)
         # Create object of generator class
         self.g = Generator()
-        # Variable fo time needed by the solver (ms)
-        self.solverTime = 0
         # In this object the solver time is stored for displaying in the game
         self.displaySolverTime = QTime()
 
@@ -532,10 +530,10 @@ class Sudoku_UI():
 
         # In this function the three neeeded boards will be created 
         # Under the use of the included generator class
-        self.solvedGrid, self.gameGrid, self.solverTime = self.g.sudoku(clues)
+        self.solvedGrid, self.gameGrid, solverTime = self.g.sudoku(clues)
 
         # Rouding the time for solving to ms
-        solverTimeMS = int(round(self.solverTime))
+        solverTimeMS = int(round(solverTime))
         secs = 0 
         ms = 0
         #Check if the time is greater then 1000ms
