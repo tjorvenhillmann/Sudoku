@@ -777,6 +777,7 @@ class Sudoku_UI():
             file.close()
             #Reset Flag
             self.solvedFlag = 0
+            self.solvingMethodFlag = 0
 
         # When new scores have been safed, we have to update the table 
         self.addScoresToBoard()
