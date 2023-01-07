@@ -143,7 +143,10 @@ class SudokuCell(QLabel):
 
 class Sudoku_UI():
     '''
-    Description has to be done!
+    This class is the main GUI class. It contains all widgets and elements 
+    with the element settings and properties. 
+    The following fucntions control the functionality depend on the users actions,
+    mainly through the eventHandler function.
     '''
     
     def __init__(self):
@@ -179,7 +182,8 @@ class Sudoku_UI():
 
     def setupMainWindow(self):
         '''
-        Description has to be done!
+        This function sets the parameters for the MainWindow as well
+        as create the centralWidget in which everything else is placed.
         '''
 
         self.MainWindow.setWindowModality(Qt.NonModal)
@@ -202,7 +206,12 @@ class Sudoku_UI():
 
     def setupWindows(self):
         '''
-        Description has to be done!
+        The Gui is build with two windows/pages inside a stackedWidget.
+        This function creates these Windows and sets all other elements
+        and widget through:
+        - setupMenuPage
+        - setupGamePage
+        At the end the centralWidget is placed inside the MainWindow
         '''
 
         self.horizontalLayout_14 = QHBoxLayout(self.centralwidget)
@@ -220,7 +229,9 @@ class Sudoku_UI():
 
     def setupMenuPage(self):
         '''
-        Description has to be done!
+        This function create the layout, widget, elements and their 
+        properties for the first default menu page.
+        At the end the known game results are loaded as well in here.
         '''
 
         self.Main = QWidget()
@@ -386,7 +397,8 @@ class Sudoku_UI():
 
     def setupGamePage(self):
         '''
-        Description has to be done!
+        This function create the layout, widget, elements and their 
+        properties for the second, the game page.
         '''
 
         self.Game = QWidget()
@@ -441,7 +453,6 @@ class Sudoku_UI():
         font6.setPointSize(11)
         self.Hint.setFont(font6)
 
-
         self.ButtonLayout.addWidget(self.Hint)
 
         self.AutoSolve = QPushButton(self.Game)
@@ -449,7 +460,6 @@ class Sudoku_UI():
         sizePolicy5.setHeightForWidth(self.AutoSolve.sizePolicy().hasHeightForWidth())
         self.AutoSolve.setSizePolicy(sizePolicy5)
         self.AutoSolve.setFont(font6)
-
 
         self.ButtonLayout.addWidget(self.AutoSolve)
 
@@ -459,7 +469,6 @@ class Sudoku_UI():
         self.Clear.setSizePolicy(sizePolicy5)
         self.Clear.setFont(font6)
 
-
         self.ButtonLayout.addWidget(self.Clear)
 
         self.Check = QPushButton(self.Game)
@@ -467,7 +476,6 @@ class Sudoku_UI():
         sizePolicy5.setHeightForWidth(self.Check.sizePolicy().hasHeightForWidth())
         self.Check.setSizePolicy(sizePolicy5)
         self.Check.setFont(font6)
-
 
         self.ButtonLayout.addWidget(self.Check)
 
@@ -477,9 +485,7 @@ class Sudoku_UI():
         self.Quit.setSizePolicy(sizePolicy5)
         self.Quit.setFont(font6)
 
-
         self.ButtonLayout.addWidget(self.Quit)
-
 
         self.ContainerLayout.addLayout(self.ButtonLayout)
 
@@ -491,7 +497,7 @@ class Sudoku_UI():
 
     def retranslateUi(self):
         '''
-        Description has to be done!
+        This funtion sets the default displayed texts/names of all the elements and their formats.
         '''
 
         self.MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sudoku", None))
@@ -512,9 +518,13 @@ class Sudoku_UI():
         self.Check.setText(QCoreApplication.translate("MainWindow", u"Check", None))
         self.Quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
 
-    def generateBoards(self, clues):
+    def generateBoards(self, clues:int):
         '''
-        Description has to be done!
+        This function calls the sudoku(clues) function and gets the boards 
+        for the current game as well the time the solver needed for solving.
+        The userGrid is also created in here, it is needed for not changing 
+        the gameGrid, if the user wants to start over.
+        The userGrid is also used to check if the board is solved correctly.
         '''
 
         # In this function the three neeeded boards will be created 
@@ -525,7 +535,7 @@ class Sudoku_UI():
 
     def createBoard(self):
         '''
-        Description has to be done!
+        This function creates the instance for each SudokuCell.
         '''
 
         for r in range(9):
@@ -539,7 +549,10 @@ class Sudoku_UI():
 
     def fillBoard(self):
         '''
-        Description has to be done!
+        This function loads the gameGrid into the board by setting the 
+        solved numbers. The empty cells where stored in a list for the 
+        hint function.
+        When the board is filled the game timer is started.
         '''
 
         # Reset counters and flags from previous run if multiple games where played 
@@ -560,27 +573,35 @@ class Sudoku_UI():
 
     def resetBoard(self):
         '''
-        Description has to be done!
+        This functions clears the cells when the user wanst to restart the game
+        or the game is finished and the user quits. This leaves an empyt board for a new game.
         '''
 
         for r in range(9):
             for c in range(9):
                 self.cells[r][c].removeCellText()
+        
+        # Clear the list of empty cells and renew the userGrid
+        self.emptyCells.clear()
 
     def removeOldBoardData(self):
         '''
-        Description has to be done!
+        This function clears the data from the last game so the new 
+        board data is not mixed with the old.
         '''
-
-        # Remove old data for avoiding double references 
+ 
         self.gameGrid.clear()
         self.solvedGrid.clear()
 
     def solveBoard(self):
         '''
-        Description has to be done!
+        This function solves the board by loading the solved board.
+        As well as set the solver time and the flags for storing.
         '''
-
+        
+        # Stop timer because board is solved
+        self.Timer.stop()
+        
         if len(self.emptyCells) > 0:
             for r in range(9):
                 for c in range(9):
@@ -588,9 +609,8 @@ class Sudoku_UI():
                     self.cells[r][c].setCellText(self.solvedGrid[r][c])
                     # Empty cells have to be set to zero remaining empty cells 
                     self.emptyCells.clear()
-                    # Disable the check button and put the background color to green
-                    self.Check.setEnabled(False)
-                    self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
+                    # Change check button 
+                    self.updateCheckBTN("disable")
 
         # Set the solverTime
         self.setSolverTime()
@@ -600,7 +620,10 @@ class Sudoku_UI():
 
     def setHint(self):
         '''
-        Description has to be done!
+        This function set a hint. Therefore it randomly picks an empty cell
+        from the list and places it into the board. The empyt cell was saved 
+        as tuple with its coordinates inside the board, so these coordinates 
+        match with the position in the instance-list containing the cell refs.
         '''
 
         # Check if there are empty cells left in the board
@@ -619,22 +642,22 @@ class Sudoku_UI():
             self.hintCounter += 1
 
         if len(self.emptyCells) == 0:
-            # Board is fully filled and check button can be set to green and disabled
-            self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
-            self.Check.setEnabled(False)
             self.Timer.stop()
+            # Board is fully filled and check button can be set to green and disabled
+            self.updateButtons("disable")
             # Board is solved when last hint was placed 
             self.solvedFlag = 1
 
     def checkBoard(self):
         '''
-        Description has to be done!
+        This function compares the userGrid with the solvedGrid and
+        sets the check button color as well as the solvedFlag
         '''
 
         # Compare user and check grid 
         if self.userGrid == self.solvedGrid:
-            self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
-            # When board is correctly solved Timer can be stopped 
+            # Game is solved correctly so we can disable clear and check button
+            self.updateButtons("disable")
             self.Timer.stop()
             self.solvedFlag = 1
         else:
@@ -643,7 +666,8 @@ class Sudoku_UI():
 
     def setSolverTime(self):
         '''
-        Description has to be done!
+        This function display the time the solver needed inside the game.
+        The time display format has to be changed for that to allow ms.
         '''
 
         # Rouding the time for solving to ms
@@ -664,7 +688,8 @@ class Sudoku_UI():
 
     def updateTime(self):
         '''
-        Description has to be done!
+        This function is called every second by the timer from fillBoard 
+        to update the TimeViewer to show the current game runtime.
         '''
 
         # Adding a second to the runtime
@@ -678,7 +703,8 @@ class Sudoku_UI():
 
     def resetTime(self):
         '''
-        Description has to be done!
+        This function resets the timer and timeViewer as well as sets the display format
+        back to default (hh:mm:ss).
         '''
 
         # Reset time on quit or clear button clicked events -> done through the eventHandler()
@@ -689,7 +715,8 @@ class Sudoku_UI():
     
     def addScoresToBoard(self):
         '''
-        Description has to be done!
+        This function is laoding all the scores from the text file and 
+        displays them inside the table on the menu page. 
         '''
 
         # First we need to read the content of scores.txt
@@ -725,7 +752,9 @@ class Sudoku_UI():
 
     def storeScore(self):
         '''
-        Description has to be done!
+        This function stores a finished game when the user quits the game page
+        by writing difficulty, time, hints and solvingMethod into a txt file.
+        According to the solvingMethodFlags the time and solve output is changed.
         '''
 
         # Check if the board is solved before closing
@@ -750,61 +779,78 @@ class Sudoku_UI():
         # When new scores have been safed, we have to update the table 
         self.addScoresToBoard()
 
+    def updateButtons(self, state:str):
+        '''
+        This function enables or disables the buttons on the game page.
+        '''
+
+        if state == "enable":
+            self.Hint.setEnabled(True)
+            self.AutoSolve.setEnabled(True)
+            self.Clear.setEnabled(True)
+            self.Check.setStyleSheet("")
+            self.Check.setEnabled(True)
+        elif state == "disable":
+            self.Hint.setEnabled(False)
+            self.AutoSolve.setEnabled(False)
+            self.Clear.setEnabled(False)
+            self.Check.setEnabled(False)
+            self.Check.setStyleSheet(u"background-color: rgba(0, 200, 0, 0.4)")
+            
     def eventHandler(self, event):
         '''
-        Description has to be done!
+        This function represents the event handeling for the buttons.
+        This function is the state machine of the game.
         '''
-        # This function represents the event handeling functionality
-        # Each UI element(e.g buttons) have diffrent evenst thats beeing handled here  
-        # With newly introduced match -> case statement from Python 3.10
-        # So Python 3.10 is needed atm --> may be later changed to if -> elif statements 
+
         match event:
             case "Easy":
-                # Generate boards with 50 remaining numbers
                 self.generateBoards(50)
                 self.fillBoard()
                 self.diffStr = "Easy"
-                return self.Windows.setCurrentIndex(1)
+                self.Windows.setCurrentIndex(1)
+
             case "Medium":
-                # Generate boards with 40 remaining numbers
                 self.generateBoards(40)
                 self.fillBoard()
                 self.diffStr = "Medium"
-                return self.Windows.setCurrentIndex(1)
+                self.Windows.setCurrentIndex(1)
+
             case "Hard":
-                # Generate boards with 30 remaining numbers
                 self.generateBoards(30)
                 self.fillBoard()
                 self.diffStr = "Hard"
-                return self.Windows.setCurrentIndex(1)
+                self.Windows.setCurrentIndex(1)
+
             case "Hint":
                 self.setHint()
+
             case "Solve":
-                # Stop timer because board is solved
-                self.Timer.stop()
                 self.solveBoard()
+
             case "Clear":
                 self.resetTime()
                 self.resetBoard()
+                # Renew the userGrid when user wants to start over
+                self.userGrid = deepcopy(self.gameGrid)
                 self.fillBoard()
-                self.Check.setStyleSheet("")
-                self.Check.setEnabled(True)
+                    
             case "Check":
                 self.checkBoard()
+
             case "Quit":
                 self.storeScore()
                 self.resetTime()
                 self.resetBoard()
                 self.removeOldBoardData()
-                # Set background color to default
-                self.Check.setStyleSheet("")
-                self.Check.setEnabled(True)
-                # Go back to menu page
-                return self.Windows.setCurrentIndex(0)
+                self.updateButtons("enable")
+                self.Windows.setCurrentIndex(0)
 
     def setupUi(self):
         '''
-        Description has to be done!
+        This function loads main parameters and elements to the game.
+        It also creates the events which control the game.
+        This function needs to be called inside the main function.
         '''
 
         self.setupMainWindow()
@@ -831,7 +877,7 @@ class Sudoku_UI():
 
     def loadUi(self):
         '''
-        Description has to be done!
+        This function simply shows the MainWindow on the screen.
         '''
 
         self.MainWindow.show()
@@ -839,7 +885,7 @@ class Sudoku_UI():
 
 def main():
     '''
-    Description has to be done!
+    This function starts the game.
     '''
 
     app = QApplication([])
