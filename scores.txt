@@ -13,4 +13,4 @@ Medium,00:00.003,0,auto
 Easy,00:00.000,0,auto
 Easy,00:00:10,31,player
 Medium,00:00:09,41,player
-
+Hard,00:00.018,0,auto

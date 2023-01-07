@@ -610,7 +610,7 @@ class Sudoku_UI():
                     # Empty cells have to be set to zero remaining empty cells 
                     self.emptyCells.clear()
                     # Change check button 
-                    self.updateCheckBTN("disable")
+                    self.updateButtons("disable")
 
         # Set the solverTime
         self.setSolverTime()
