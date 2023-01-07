@@ -187,7 +187,6 @@ class Sudoku_UI():
         '''
 
         self.MainWindow.setWindowModality(Qt.NonModal)
-        #self.MainWindow.resize(1024, 768)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -289,7 +288,7 @@ class Sudoku_UI():
         self.horizontalLayout_2.setSizeConstraint(QLayout.SetMaximumSize)
         self.ScoreTable = QTableWidget(self.Main)
         self.ScoreTable.setObjectName(u"ScoreTable")
-        self.ScoreTable.setColumnCount(4)
+        self.ScoreTable.setColumnCount(5)
         headerFont = QFont()
         headerFont.setPointSize(9)
         headerFont.setBold(True)
@@ -298,14 +297,17 @@ class Sudoku_UI():
         diffcultyHeader.setFont(headerFont)
         timeHeader = QTableWidgetItem()
         timeHeader.setFont(headerFont)
+        solverTimeHeader = QTableWidgetItem()
+        solverTimeHeader.setFont(headerFont)
         hintHeader = QTableWidgetItem()
         hintHeader.setFont(headerFont)
         solverHeader = QTableWidgetItem()
         solverHeader.setFont(headerFont)
         self.ScoreTable.setHorizontalHeaderItem(0, diffcultyHeader)
         self.ScoreTable.setHorizontalHeaderItem(1, timeHeader)
-        self.ScoreTable.setHorizontalHeaderItem(2, hintHeader)
-        self.ScoreTable.setHorizontalHeaderItem(3, solverHeader)
+        self.ScoreTable.setHorizontalHeaderItem(2, solverTimeHeader)
+        self.ScoreTable.setHorizontalHeaderItem(3, hintHeader)
+        self.ScoreTable.setHorizontalHeaderItem(4, solverHeader)
         sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
@@ -505,8 +507,9 @@ class Sudoku_UI():
         self.LabelScoreBoard.setText(QCoreApplication.translate("MainWindow", u"GameBoard:", None))
         self.ScoreTable.horizontalHeaderItem(0).setText(QCoreApplication.translate("MainWindow", u"Difficulty", None))
         self.ScoreTable.horizontalHeaderItem(1).setText(QCoreApplication.translate("MainWindow", u"Time", None))
-        self.ScoreTable.horizontalHeaderItem(2).setText(QCoreApplication.translate("MainWindow", u"Hints", None))
-        self.ScoreTable.horizontalHeaderItem(3).setText(QCoreApplication.translate("MainWindow", u"Solver", None))
+        self.ScoreTable.horizontalHeaderItem(2).setText(QCoreApplication.translate("MainWindow", u"Solver-Time", None))
+        self.ScoreTable.horizontalHeaderItem(3).setText(QCoreApplication.translate("MainWindow", u"Hints", None))
+        self.ScoreTable.horizontalHeaderItem(4).setText(QCoreApplication.translate("MainWindow", u"Solver", None))
         self.LabelNewGame.setText(QCoreApplication.translate("MainWindow", u"New Game:", None))
         self.Easy.setText(QCoreApplication.translate("MainWindow", u"\nEasy\n", None))
         self.Medium.setText(QCoreApplication.translate("MainWindow", u"\nMedium\n", None))
@@ -530,6 +533,20 @@ class Sudoku_UI():
         # In this function the three neeeded boards will be created 
         # Under the use of the included generator class
         self.solvedGrid, self.gameGrid, self.solverTime = self.g.sudoku(clues)
+
+        # Rouding the time for solving to ms
+        solverTimeMS = int(round(self.solverTime))
+        secs = 0 
+        ms = 0
+        #Check if the time is greater then 1000ms
+        if solverTimeMS >= 1000:
+            secs = solverTimeMS//1000
+            ms = solverTimeMS - (secs*1000)
+        else:
+            ms = solverTimeMS
+        # The time for solving as QTime format to be displayed in game
+        self.displaySolverTime.setHMS(0,0,secs,ms)
+
         self.userGrid = deepcopy(self.gameGrid)
         self.createBoard()
 
@@ -670,19 +687,6 @@ class Sudoku_UI():
         The time display format has to be changed for that to allow ms.
         '''
 
-        # Rouding the time for solving to ms
-        solverTimeMS = int(round(self.solverTime))
-        secs = 0 
-        ms = 0
-        #Check if the time is greater then 1000ms
-        if solverTimeMS >= 1000:
-            secs = solverTimeMS//1000
-            ms = solverTimeMS - (secs*1000)
-        else:
-            ms = solverTimeMS
-        # The time for solving as QTime format to be displayed in game
-        self.displaySolverTime.setHMS(0,0,secs,ms) 
-        # Set timeViewer to displaySolverTime 
         self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"mm:ss.zzz", None))
         self.TimeViewer.setTime(self.displaySolverTime)
 
@@ -764,13 +768,14 @@ class Sudoku_UI():
             # Create default string for solving method and time 
             solvingMethod = "player"
             time = self.runtime.toString("hh:mm:ss")
+            autoSolver_time = self.displaySolverTime.toString("mm:ss.zzz")
             # Change solving method string when auto.solving was used
             if self.solvingMethodFlag == 1:
                 solvingMethod = "auto"
                 # Change time format to get ms as well
-                time = self.displaySolverTime.toString("mm:ss.zzz")
+                time = autoSolver_time
             # Generate new Score string 
-            newScore = self.diffStr + "," + time + "," + str(self.hintCounter) + "," + solvingMethod + "\n"
+            newScore = self.diffStr + "," + time + "," + autoSolver_time + "," + str(self.hintCounter) + "," + solvingMethod + "\n"
             # Write score string to text file
             file.writelines(newScore)
             # Close file properly
