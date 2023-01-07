@@ -8,23 +8,35 @@ from generator import *
 
 class SudokuCell(QLabel):
     '''
-    Description has to be done!
+    This class contains all settings and interactive function for 
+    a SudokuCell. Labels are used as widget for each cell. 
+    We set/remove the text and change background colors if the cell 
+    is selected or not. We can also set multiple elements if the user 
+    requests that.
+    Input of numbers is done by pressing the number on the keyboard once 
+    to place the number and again to remove it. 
     '''
 
     def __init__(self, row , column, userGrid):
+        # Call the constructor of the superclass
         super(QLabel, self).__init__()
+        # Store position inside the grid
         self.row = row 
         self.column = column
         # Reference to the userGrid from parent class Sudoku_UI
         # Used to store single cells that only contain a single number
         self.userGrid = userGrid
         self.numberSet = set()
+        # Set the needed font sizes 
         self.cellFont = QFont()
         self.cellFont.setPointSize(16)
         self.defaultFont = QFont()
         self.defaultFont.setPointSize(8)
+        # ReadOnlyFlag indicates that the cell is a solved cell
         self.readOnlyFlag = 0
+        # Styles for the border thickness and color
         self.styles = BorderStyleSheets.style
+        # SizePolicy set the behaviour of the label in the window
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
@@ -36,26 +48,23 @@ class SudokuCell(QLabel):
         self.setFocusPolicy(Qt.TabFocus | Qt.ClickFocus)
         self.setMinimumSize(50, 50)
 
-    # Hightlight background of selected cell
     def focusInEvent(self, event):
         '''
-        Description has to be done!
+        This function changes the background-color when the cell is selected by tab or mouse
         '''
 
         self.setStyleSheet("background-color: rgb(200, 200, 200);" + str(self.styles[self.row][self.column]))
     
-    # Remove highlight from cell when unselected
     def focusOutEvent(self, event):
         '''
-        Description has to be done!
+        This funcion sets background-color back to default when cell is no selected anymore
         '''
 
         self.setStyleSheet(str(self.styles[self.row][self.column]))
-   
-    # Place number inside Sudoku cell 
+    
     def setCellText(self, number):
         '''
-        Description has to be done!
+        This function places the text for the solved cells and marks them with the readOnlyFlag 
         '''
 
         # This function is only called when a single number is entered
@@ -66,20 +75,22 @@ class SudokuCell(QLabel):
         else:
             self.setText("")
 
-    # Remove cell text 
     def removeCellText(self):
         '''
-        Description has to be done!
+        This function clears the text and removes the readOnlyFlag.
+        Makes it accessible for a new game.
         '''
 
         self.setFont(self.defaultFont)
         self.setText("")
         self.readOnlyFlag = 0
 
-    # Update the number of current cell
     def setElements(self):
         '''
-        Description has to be done!
+        This function uses the number set to update multiple elements in sorted order 
+        in the cell.
+        With this function it's possible to display more then one number for easier play. 
+        When the set only contains one number it is stored in the userGrid. 
         '''
 
         # Local variable definitions
@@ -106,10 +117,10 @@ class SudokuCell(QLabel):
         # Display text in cell
         self.setText(numberStr)	
 
-    # Add element to set 
     def addAndRemoveElement(self, elem = 0):
         '''
-        Description has to be done!
+        This function adds the number or removes it whens already inside the set.
+        This function is the 'CallBack' for the keyboard inputs. 
         '''
 
         if elem in self.numberSet:
@@ -118,10 +129,10 @@ class SudokuCell(QLabel):
             self.numberSet.add(elem)
         self.setElements()
 
-    # Keyboard input
     def keyPressEvent(self, event):
         '''
-        Description has to be done!
+        This functions handles the keyboard inputs and only allows the key 1-9.
+        Every other is beeing ignored. When the cells is solved we ignore the input. 
         '''
 
         if (event.key() >= Qt.Key_1 and event.key() <= Qt.Key_9):
@@ -639,7 +650,6 @@ class Sudoku_UI():
         solverTimeMS = int(round(self.solverTime))
         secs = 0 
         ms = 0
-        print(solverTimeMS)
         #Check if the time is greater then 1000ms
         if solverTimeMS >= 1000:
             secs = solverTimeMS//1000
@@ -650,7 +660,6 @@ class Sudoku_UI():
         self.displaySolverTime.setHMS(0,0,secs,ms) 
         # Set timeViewer to displaySolverTime 
         self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"mm:ss.zzz", None))
-        print(self.displaySolverTime.toString("mm:ss.zzz"))
         self.TimeViewer.setTime(self.displaySolverTime)
 
     def updateTime(self):
