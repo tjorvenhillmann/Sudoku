@@ -22,7 +22,7 @@ class Generator:
 
     def __init__(self) -> None:
         # Counter variable for possible Solutions
-        self.counter = 1
+        self.counter = 0
         # Initialise empty 9x9 grid
         self.grid = [[0]*9 for x in range(9)]
 
