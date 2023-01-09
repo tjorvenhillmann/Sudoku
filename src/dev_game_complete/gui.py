@@ -10,29 +10,26 @@ class SudokuCell(QLabel):
     '''
     This class contains all settings and interactive function for 
     a SudokuCell. Labels are used as widget for each cell. 
-    We set/remove the text and change background colors if the cell 
-    is selected or not. We can also set multiple elements if the user 
-    requests that.
-    Input of numbers is done by pressing the number on the keyboard once 
-    to place the number and again to remove it. 
+    Further information for each method are inside the comment section 
+    of each method.
     '''
 
-    def __init__(self, row , column, userGrid):
+    def __init__(self, row:int , column:int, userGrid:list):
         # Call the constructor of the superclass
         super(QLabel, self).__init__()
         # Store position inside the grid
         self.row = row 
         self.column = column
-        # Reference to the userGrid from parent class Sudoku_UI
-        # Used to store single cells that only contain a single number
+        # Reference to the userGrid from class Sudoku_UI
+        # Used to store single numbers -> final decision by user
         self.userGrid = userGrid
-        self.numberSet = set()
+        self.numberList = list()
         # Set the needed font sizes 
         self.cellFont = QFont()
         self.cellFont.setPointSize(16)
         self.defaultFont = QFont()
         self.defaultFont.setPointSize(8)
-        # ReadOnlyFlag indicates that the cell is a solved cell
+        # ReadOnlyFlag=1 indicates that the cell is a solved cell
         self.readOnlyFlag = 0
         # Styles for the border thickness and color
         self.styles = BorderStyleSheets.style
@@ -42,11 +39,12 @@ class SudokuCell(QLabel):
         self.setSizePolicy(sizePolicy)
         self.setFrameShape(QFrame.NoFrame)
         self.setWordWrap(True)
-        # Get cell border outline style from styles.py file
-        self.setStyleSheet(str(self.styles[self.row][self.column]))
         self.setAlignment(Qt.AlignCenter)
         self.setFocusPolicy(Qt.TabFocus | Qt.ClickFocus)
         self.setMinimumSize(50, 50)
+        # Get cell border outline style from styles.py file
+        self.setStyleSheet(str(self.styles[self.row][self.column]))
+
 
     def focusInEvent(self, event):
         '''
@@ -57,28 +55,27 @@ class SudokuCell(QLabel):
     
     def focusOutEvent(self, event):
         '''
-        This funcion sets background-color back to default when cell is no selected anymore
+        This function sets background-color back to default when cell is not selected anymore
         '''
 
         self.setStyleSheet(str(self.styles[self.row][self.column]))
     
-    def setCellText(self, number):
+    def setCellText(self, number:int):
         '''
         This function places the text for the solved cells and marks them with the readOnlyFlag 
         '''
 
-        # This function is only called when a single number is entered
         if (number != 0):
             self.setFont(self.cellFont)
             self.setText(str(number))
             self.readOnlyFlag = 1
         else:
+            # Empty string leaves the cell blank
             self.setText("")
 
     def removeCellText(self):
         '''
         This function clears the text and removes the readOnlyFlag.
-        Makes it accessible for a new game.
         '''
 
         self.setFont(self.defaultFont)
@@ -87,29 +84,28 @@ class SudokuCell(QLabel):
 
     def setElements(self):
         '''
-        This function uses the number set to update multiple elements in sorted order 
-        in the cell.
+        This function uses the number list to update multiple elements in sorted order in the cell.
         With this function it's possible to display more then one number for easier play. 
-        When the set only contains one number it is stored in the userGrid. 
+        When the list only contains one number it is stored in the userGrid. 
         '''
 
         # Local variable definitions
         numberStr = str()
 
         # If only a single number for this cell, add it to the userGrid
-        if len(self.numberSet) == 1:
+        if len(self.numberList) == 1:
             self.setFont(self.cellFont)
-            self.userGrid[self.row][self.column] = next(iter(self.numberSet))
-            # This line extracts the first argument from the set 
-            # Needed to display the text in the cell center
-            numberStr = str(next(iter(self.numberSet)))
+            self.userGrid[self.row][self.column] = self.numberList[0]
+            numberStr = str(self.numberList[0])
         else:
             self.setFont(self.defaultFont)
             self.userGrid[self.row][self.column] = 0
             # Loop for wrapping text
-            for x, number in enumerate(self.numberSet):
-                # After 3 numbesr insert line break 
+            self.numberList = sorted(self.numberList)
+            for x, number in enumerate(self.numberList):
+                # After 3 numbers insert line break 
                 # Manual line break is needed because of sizePolicy "expanding"
+                # Otherwise the cell would expands it's borders automatically
                 if not (x % 3) and x != 0:
                     numberStr += "\n"
                 numberStr += (str(number) + " ")
@@ -117,16 +113,15 @@ class SudokuCell(QLabel):
         # Display text in cell
         self.setText(numberStr)	
 
-    def addAndRemoveElement(self, elem = 0):
+    def addAndRemoveElement(self, elem:int):
         '''
-        This function adds the number or removes it whens already inside the set.
-        This function is the 'CallBack' for the keyboard inputs. 
+        This function adds the number or removes it whens already inside the list. 
         '''
 
-        if elem in self.numberSet:
-            self.numberSet.remove(elem)
+        if elem in self.numberList:
+            self.numberList.remove(elem)
         else:
-            self.numberSet.add(elem)
+            self.numberList.append(elem)
         self.setElements()
 
     def keyPressEvent(self, event):
@@ -136,34 +131,33 @@ class SudokuCell(QLabel):
         '''
 
         if (event.key() >= Qt.Key_1 and event.key() <= Qt.Key_9):
-            # Check if the cell is not a clue 
+            # Check if the cell is not solved already 
             if not self.readOnlyFlag:
                 self.addAndRemoveElement(event.key() - Qt.Key_0)
 
 
 class Sudoku_UI():
     '''
-    This class is the main GUI class. It contains all widgets and elements 
-    with the element settings and properties. 
-    The following fucntions control the functionality depend on the users actions,
+    This class is the main GUI class. It contains all widgets, elements and Layouts.
+    As well as all the element settings and properties. 
+    The following fucntions control the functionality depending on the users actions,
     mainly through the eventHandler function.
     '''
     
     def __init__(self):
         # Create MainWindow 
         self.MainWindow = QMainWindow()
-        # Create empty list for both game and solved boards 
-        # -> needed so that the reference always stays the same 
+        # Create empty list for both game and solved boards  
         self.gameGrid = list()
         self.solvedGrid = list()
         # Empty list for storing all Sudoku_Cell instances
-        self.cells = [[0]*9 for x in range(9)]
+        self.cells = [[0]*9 for x in range(9)] 
         # List of empty cells for faster hint function 
         # Random selection is way faster when only used on empty cells 
         self.emptyCells = list()
         # Solving flag to avoid storing the score if game was quitted before solving
         self.solvedFlag = 0
-        # Solving method flag -> when 1 auto-solved
+        # Solving method flag -> 1 when auto-solved
         self.solvingMethodFlag = 0
         # Create hint counter
         self.hintCounter = 0
@@ -178,6 +172,8 @@ class Sudoku_UI():
         # In this object the solver time is stored for displaying in the game
         self.displaySolverTime = QTime()
 
+
+    # ------ Setup Gui Elements Section ------ 
     def setupMainWindow(self):
         '''
         This function sets the parameters for the MainWindow as well
@@ -185,6 +181,7 @@ class Sudoku_UI():
         '''
 
         self.MainWindow.setWindowModality(Qt.NonModal)
+        self.MainWindow.resize(800, 650)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -226,7 +223,7 @@ class Sudoku_UI():
 
     def setupMenuPage(self):
         '''
-        This function create the layout, widget, elements and their 
+        This function create the layouts, widgets, elements and their 
         properties for the first default menu page.
         At the end the known game results are loaded as well in here.
         '''
@@ -398,7 +395,7 @@ class Sudoku_UI():
 
     def setupGamePage(self):
         '''
-        This function create the layout, widget, elements and their 
+        This function creates the layouts, widgets, elements and their 
         properties for the second, the game page.
         '''
 
@@ -520,6 +517,8 @@ class Sudoku_UI():
         self.Check.setText(QCoreApplication.translate("MainWindow", u"Check", None))
         self.Quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
 
+
+    # ------ Function Block for the board ------ 
     def generateBoards(self, clues:int):
         '''
         This function calls the sudoku(clues) function and gets the boards 
@@ -547,6 +546,7 @@ class Sudoku_UI():
         self.displaySolverTime.setHMS(0,0,secs,ms)
 
         self.userGrid = deepcopy(self.gameGrid)
+        # After getting the boards we can load the cells
         self.createBoard()
 
     def createBoard(self):
@@ -590,14 +590,14 @@ class Sudoku_UI():
     def resetBoard(self):
         '''
         This functions clears the cells when the user wanst to restart the game
-        or the game is finished and the user quits. This leaves an empyt board for a new game.
+        or the game is finished and the user quits. This leaves an empty board for a new game.
         '''
 
         for r in range(9):
             for c in range(9):
                 self.cells[r][c].removeCellText()
         
-        # Clear the list of empty cells and renew the userGrid
+        # Clear the list of empty cells
         self.emptyCells.clear()
 
     def removeOldBoardData(self):
@@ -628,41 +628,11 @@ class Sudoku_UI():
                     # Change check button 
                     self.updateButtons("disable")
 
-        # Set the solverTime
+        # Time format changes when solver is used 
         self.setSolverTime()
 
         self.solvedFlag = 1
         self.solvingMethodFlag = 1
-
-    def setHint(self):
-        '''
-        This function set a hint. Therefore it randomly picks an empty cell
-        from the list and places it into the board. The empyt cell was saved 
-        as tuple with its coordinates inside the board, so these coordinates 
-        match with the position in the instance-list containing the cell refs.
-        '''
-
-        # Check if there are empty cells left in the board
-        if len(self.emptyCells) > 0:
-            # Choice lets us randomly choose an element from sequence
-            r, c = choice(self.emptyCells)
-            self.emptyCells.remove((r,c))
-            
-            # Take element from solved grid and set it inside the cell
-            self.cells[r][c].setCellText(self.solvedGrid[r][c])
-            #self.cells[r][c].focusInEvent(event = 1)
-            # Store the number inside the userGrid as solved number
-            self.userGrid[r][c] = self.solvedGrid[r][c]
-
-            # Add 1 to hint counter 
-            self.hintCounter += 1
-
-        if len(self.emptyCells) == 0:
-            self.Timer.stop()
-            # Board is fully filled and check button can be set to green and disabled
-            self.updateButtons("disable")
-            # Board is solved when last hint was placed 
-            self.solvedFlag = 1
 
     def checkBoard(self):
         '''
@@ -680,10 +650,42 @@ class Sudoku_UI():
             self.Check.setStyleSheet(u"background-color: rgba(200, 0, 0, 0.4)")
             self.solvedFlag = 0
 
+    def setHint(self):
+        '''
+        This function sets a hint. Therefore it randomly picks an empty cell
+        from the list and places it into the board. The empyt cell was saved 
+        as tuple with its coordinates inside the board, so these coordinates 
+        match with the position in the instance-list containing the cell refs.
+        '''
+
+        # Check if there are empty cells left in the board
+        if len(self.emptyCells) > 0:
+            # Choice lets us randomly choose an element from list
+            r, c = choice(self.emptyCells)
+            self.emptyCells.remove((r,c))
+            
+            # Take element from solved grid and set it inside the cell
+            self.cells[r][c].setCellText(self.solvedGrid[r][c])
+            # Store the number inside the userGrid as solved number
+            self.userGrid[r][c] = self.solvedGrid[r][c]
+
+            # Add 1 to hint counter 
+            self.hintCounter += 1
+
+        # No else here so that with the last placed hint the game stops
+        if len(self.emptyCells) == 0:
+            self.Timer.stop()
+            # Board is fully filled and check button can be set to green and disabled
+            self.updateButtons("disable")
+            # Board is solved when last hint was placed 
+            self.solvedFlag = 1
+
+
+    # ------ Function Block for the times ------ 
     def setSolverTime(self):
         '''
-        This function display the time the solver needed inside the game.
-        The time display format has to be changed for that to allow ms.
+        This function display the solver time inside the game.
+        The time display format has to be changed for that to allow milliseconds.
         '''
 
         self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"mm:ss.zzz", None))
@@ -691,8 +693,8 @@ class Sudoku_UI():
 
     def updateTime(self):
         '''
-        This function is called every second by the timer from fillBoard 
-        to update the TimeViewer to show the current game runtime.
+        This function is called every second by the timer started in fillBoard() 
+        We update the TimeViewer to show the current game runtime.
         '''
 
         # Adding a second to the runtime
@@ -716,9 +718,11 @@ class Sudoku_UI():
         self.TimeViewer.setDisplayFormat(QCoreApplication.translate("MainWindow", u"hh:mm:ss", None))
         self.TimeViewer.setTime(self.runtime)
     
+
+    # ------ Function Block for scores ------ 
     def addScoresToBoard(self):
         '''
-        This function is laoding all the scores from the text file and 
+        This function is loading all the known scores from the text file and 
         displays them inside the table on the menu page. 
         '''
 
@@ -747,7 +751,7 @@ class Sudoku_UI():
                     item.setBackground(QColor("orange"))
                 elif element == "Hard":
                     item.setBackground(QColor("red"))
-                # Disable the item so the user cant change the text + center text
+                # Disable the item so the user can't change the text + center text
                 item.setFlags(Qt.ItemIsEnabled)
                 item.setTextAlignment(Qt.AlignCenter)
                 # Finally place the item into the table widget to be displayed
@@ -756,13 +760,12 @@ class Sudoku_UI():
     def storeScore(self):
         '''
         This function stores a finished game when the user quits the game page
-        by writing difficulty, time, hints and solvingMethod into a txt file.
-        According to the solvingMethodFlags the time and solve output is changed.
+        by writing difficulty, times, hints and solvingMethod into a txt file.
         '''
 
         # Check if the board is solved before closing
         if self.solvedFlag == 1:
-            # Open to score text file in appeding + reading mode (a+)
+            # Open to score text file in appending + reading mode (a+)
             file = open('./scores.txt', 'a+')
             # Create default string for solving method and time 
             solvingMethod = "player"
@@ -779,13 +782,15 @@ class Sudoku_UI():
             file.writelines(newScore)
             # Close file properly
             file.close()
-            #Reset Flag
+            # Reset Flag
             self.solvedFlag = 0
             self.solvingMethodFlag = 0
 
         # When new scores have been safed, we have to update the table 
         self.addScoresToBoard()
 
+
+    # ------ Function Block buttons and event handling ------ 
     def updateButtons(self, state:str):
         '''
         This function enables or disables the buttons on the game page.
@@ -853,6 +858,8 @@ class Sudoku_UI():
                 self.updateButtons("enable")
                 self.Windows.setCurrentIndex(0)
 
+
+    # ------ Function Block for loading and displaying ------ 
     def setupUi(self):
         '''
         This function loads main parameters and elements to the game.
