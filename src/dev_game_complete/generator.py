@@ -167,13 +167,10 @@ class Generator:
             backup = self.grid[row][col]
             self.grid[row][col] = 0
             
-            # Take a full copy of the grid
-            copyGrid = deepcopy(self.grid)
-            
             # Count the number of solutions that this grid has
             self.counter = 0
             start_time = time()  
-            self.solveGrid(copyGrid)
+            self.solveGrid(self.grid)
             end_time = time()   
             # If the number of solution is different from 1 then we need to cancel the change by putting the value we took away back in the grid
             if self.counter != 1:
