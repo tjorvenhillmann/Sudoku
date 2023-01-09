@@ -147,9 +147,10 @@ class Sudoku_UI():
     def __init__(self):
         # Create MainWindow 
         self.MainWindow = QMainWindow()
-        # Create empty list for both game and solved boards  
+        # Create empty list for all grids
         self.gameGrid = list()
         self.solvedGrid = list()
+        self.userGrid = list()
         # Empty list for storing all Sudoku_Cell instances
         self.cells = [[0]*9 for x in range(9)] 
         # List of empty cells for faster hint function 
@@ -845,6 +846,8 @@ class Sudoku_UI():
                 self.resetBoard()
                 # Renew the userGrid when user wants to start over
                 self.userGrid = deepcopy(self.gameGrid)
+                # Needed to restore the reference to the userGrid
+                self.createBoard()
                 self.fillBoard()
                     
             case "Check":
